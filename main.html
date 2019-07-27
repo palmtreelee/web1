@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width,
+          user-scalable=yes,
+          initial-scale= 1.0,
+          maxium-scale = 3.0
+          ">
+    <title>가장 간단한 HTML</title>
+
+    <style media="screen">
+      p{ font-size: 20px;}
+    </style>
+
+    <script type="text/javascript">
+      function InitCanvas(i_Width){
+        let arstPos = [];
+        arstPos.push({m_szIdCanvas : 'cvsQuiz', m_cx : i_Width, m_cy : 100});
+        arstPos.push({m_szIdCanvas : 'cvsTimer', m_cx : i_Width, m_cy : Math.floor(i_Width / 10)});
+        arstPos.push({m_szIdCanvas : 'cvsHint', m_cx : i_Width, m_cy : Math.floor(i_Width / 10 * 6)});
+        arstPos.push({m_szIdCanvas : 'cvsBtn', m_cx : i_Width, m_cy : Math.floor(i_Width / 5 * 4 +2) });
+
+        let x = 0;
+        let y = 0;
+        let szDiv='<div class="" style="position:absolute; top:';//0px; z-index:1">'
+        let szCanvas='<canvas id="';//
+
+        let i = 1;
+        for (let key in arstPos){
+          let stPos=arstPos[key];
+          let szTag=szDiv+y+'px; left:' + x + 'px; z-index:'+ i + '">\r\n';
+          szTag=szTag + szCanvas + stPos.m_szIdCanvas + '" width="' + stPos.m_cx + '" height="' + stPos.m_cy + '"></canvas>\r\n';
+          szTag=szTag + '</div>\r\n';
+
+          document.write(szTag);
+
+          i = i+1;
+          y = y+stPos.m_cy;
+        }
+
+      }
+      InitCanvas(387);
+    </script>
+
+  </head>
+  <body>
+    <!-- <div class="">
+
+      <img id="id_sprRobot" src="Img/robot.png" alt="" width="100px" height="100px">
+      <img id="id_sprBomb" src="Img/Bomb1.png" alt="" width="100px" height="100px">
+    </div> -->
+    <div style="display:none">
+      <img id="id_sprRobot" src="Img/robot.png" alt="" width="0px" height="0px">
+      <img id="id_sprBomb" src="Img/Bomb1.png" alt="" width="0px" height="0px">
+      <img id="id_sprQuizOk" src="Img/QuizOk.png" alt="" width="100px" height="100px">
+      <img id="id_sprQuizNo" src="Img/QuizNo.png" alt="" width="100px" height="100px">
+      <img id="id_sprTimeOver" src="Img/timeover.png" alt="" width="100px" height="100px">
+      <img id="id_sprColck" src="Img/Clock.png" alt="" width="100px" height="100px">
+      <audio preload="auto">
+        <source  src="Snd/Fire.MP3" type = "">
+      </audio>
+      <audio preload="auto">
+        <source  src="Snd/Die.MP3" type = "">
+      </audio>
+      <audio preload="auto">
+        <source  src="Snd/Victory.mp3" type = "">
+      </audio>
+      <audio preload="auto">
+        <source  src="Snd/Fail.wav" type = "">
+      </audio>
+      <audio preload="auto">
+        <source  src="Snd/ClockTicking.wav" type = "">
+      </audio>
+      <audio preload="auto">
+        <source  src="Snd/TimeStop.wav" type = "">
+      </audio>
+      <audio preload="auto">
+        <source  src="Snd/TimeOverFail.MP3" type = "">
+      </audio>
+      <audio preload="auto">
+        <source  src="Snd/BtnClick.MP3" type = "">
+      </audio>
+    </div>
+
+    <script src='https://code.responsivevoice.org/responsivevoice.js'></script>
+    <script type="text/javascript" src="CSys.js?verson=1.411"></script>
+    <script type="text/javascript" src="./Lib/CSound.js?verson=1.421"></script>
+    <script type="text/javascript" src="./Lib/CSprite.js?verson=1.421"></script>
+    <script type="text/javascript">
+      var g_Sys = new CSys();
+      var g_sprRobot = new CSprite();
+      var g_sprBomb = new CSprite();
+      var g_sprQuizOk = new CSprite();
+      var g_sprQuizNo = new CSprite();
+      var g_sprTimeOver = new CSprite();
+      var g_sprClock = new CSprite();
+
+      var g_sndFire = new CSound();
+      var g_sndDie = new CSound();
+      var g_sndSucces = new CSound();
+      var g_sndFail = new CSound();
+      var g_sndTimeStop = new CSound();
+      var g_sndTimeOverFail = new CSound();
+      var g_sndClockTick = new CSound();
+      var g_sndBtnClick = new CSound();
+
+      // var g_sprTest=new Image();
+      // g_sprTest.src='./Img/robot.png';
+      window.onload = function(){
+        console.log('Window Load');
+         g_sprRobot.Load('Img/robot.png');
+         g_sprBomb.Load('Img/Bomb1.png');
+        //  g_sprRobot.Load('Img/QuizOk.png');
+        // g_sprBomb.Load('Img/QuizNo.png');
+         g_sprQuizOk.Load('Img/QuizOk.png');
+        g_sprQuizNo.Load('Img/QuizNo.png');
+        g_sprTimeOver.Load('Img/timeover.png');
+        g_sprClock.Load('Img/Clock.png');
+         // g_sprRobot.LoadFromID('id_sprRobot');
+         // g_sprBomb.LoadFromID('id_sprBomb');
+        g_sndFire.Load("Snd/Fire.MP3");
+        g_sndDie.Load("Snd/Die.MP3");
+        g_sndSucces.Load("Snd/Victory.mp3");
+        g_sndFail.Load("Snd/Fail.wav");
+        g_sndTimeStop.Load("Snd/TimeStop.wav");
+        g_sndTimeOverFail.Load("Snd/TimeOverFail.MP3");
+        g_sndClockTick.Load("Snd/ClockTicking.wav");
+        g_sndBtnClick.Load("Snd/BtnClick.wav");
+
+      }
+    </script>
+
+    <script type="text/javascript" src="./Lib/PageDraw.js?verson=1.413"></script>
+    <script type="text/javascript" src="./Lib/CMoveImg.js?verson=1.222"></script>
+    <script type="text/javascript" src="./Lib/CBtn.js?verson=1.222"></script>
+    <script type="text/javascript" src="CBtnWnd.js?verson=1.211"></script>
+    <script type="text/javascript" src="CquizWnd.js?verson=1.2221"></script>
+    <script type="text/javascript" src="CHintWnd.js?verson=1.2221"></script>
+    <script type="text/javascript" src="CTimerWnd.js?verson=1.2221"></script>
+
+    <script type="text/javascript">
+
+      var g_pageQuiz=new CQuizWnd();
+      var g_pageHint=new CHintWnd();
+      var g_pageBtn=new CBtnWnd();
+      var g_pageTimer=new CTimerWnd();
+
+
+
+      function OnTimerEx(){
+        if (g_Sys.IsModeNone()){
+          if (false===g_Sys.m_isLoadImage && g_sprRobot.m_isLoad && g_sprBomb.m_isLoad && g_sprQuizOk.m_isLoad && g_sprQuizNo.m_isLoad && g_sprTimeOver.m_isLoad && g_sprClock.m_isLoad){
+
+            g_sprRobot.ReLoadSize();
+            g_sprBomb.ReLoadSize();
+            g_sprQuizOk.ReLoadSize();
+            g_sprQuizNo.ReLoadSize();
+            g_sprTimeOver.ReLoadSize();
+            g_sprClock.ReLoadSize();
+
+            g_pageQuiz.InitCPage('cvsQuiz');
+            g_pageHint.Init('cvsHint');
+            g_pageBtn.Init('cvsBtn');
+            g_pageTimer.Init('cvsTimer');
+
+            g_Sys.OnTimerEx = function(){
+              if (g_Sys.m_arstMsgQ.length > 0){
+                let stMsg=g_Sys.m_arstMsgQ[0];
+                console.log(stMsg);
+                if (g_Sys.e_msgQuizVoiceStart === stMsg.eMsg){
+
+                }else if (g_Sys.e_msgTitleEnd_wParam1IsBtnID === stMsg.eMsg){
+                  g_Sys.m_eLevel = stMsg.wParam;
+                  g_Sys.SetRun(g_Sys.e_modeQui);
+                  g_pageBtn.RestoreBtn(false,true);
+                }else if (g_Sys.e_msgTimeOver === stMsg.eMsg){
+                  g_Sys.m_Select = 0;
+                  g_pageTimer.m_isNeedDraw = false;
+                  g_pageBtn.StopInput(g_Sys.m_Select);
+                }else if (g_Sys.e_msgQuizVoiceEnd === stMsg.eMsg){
+                  g_pageBtn.RestoreBtn(true,true);
+                  g_pageTimer.SetTimer(g_Sys.GetTimeQuizLimit(),true);
+                }else if (g_Sys.e_msgSelectVoiceStart === stMsg.eMsg){
+                  if (0 === g_Sys.m_Select){
+                    responsiveVoice.speak('빨리 풀었어야지! 정답이 무엇인지 확인해볼까?','Korean Female',
+                        {onend: g_pageBtn.OnEndTTSCheckSelect});
+                  }else{
+                    responsiveVoice.speak(g_Sys.GetStrNumber(g_Sys.m_Select,'라')+'고? 맞는지 확인해볼까?','Korean Female',
+                        {onend: g_pageBtn.OnEndTTSCheckSelect});
+                  }
+
+                }else if (g_Sys.e_msgSelectVoiceEnd === stMsg.eMsg){
+                  g_Sys.m_eMode=g_Sys.e_modeCheckSelect;
+
+                  g_pageQuiz.AniCheckSelect(true);
+                  g_pageHint.AniCheckSelect(true);
+                  //g_pageBtn.AniCheckSelect(true);
+                }else if (g_Sys.e_msgSetResult_wParamIsNewResult === stMsg.eMsg){
+                  g_pageQuiz.SetResult(stMsg.wParam);
+                  g_pageBtn.SetResult(stMsg.wParam);
+                }else if (g_Sys.e_msgSetHitStart === stMsg.eMsg){
+                  g_pageBtn.SetHit();
+                }else if (g_Sys.e_msgSetHitEnd === stMsg.eMsg){
+                  g_Sys.m_Second ++;
+                  if (g_Sys.m_Second >= g_Sys.m_first){
+                    g_Sys.m_Second = 1;
+                    g_Sys.m_first ++;
+                  }
+
+                  g_Sys.m_Select = 0;
+
+                  g_pageQuiz.SetSys(g_Sys);
+                  g_pageHint.SetSys(g_Sys);
+                  g_pageBtn.SetSys(g_Sys);
+
+                  g_pageQuiz.m_isTTS = false;
+
+                  g_pageBtn.RestoreBtn(false,true);
+                  g_Sys.SetRun(g_Sys.e_modeQuiz);
+                }
+                g_Sys.m_arstMsgQ.splice(0,1);
+              }
+
+              let tCur=new Date().getTime();
+              g_pageHint.OnTimerEx(tCur);
+              g_pageBtn.OnTimerEx(tCur);
+              g_pageQuiz.OnTimerEx(tCur);
+              g_pageTimer.OnTimerEx(tCur);
+            }
+
+            g_Sys.SetRun = function(e_mode){
+              e_mode = typeof e_mode !== 'undefined' ? e_mode : g_Sys.e_modeQuiz;
+              g_Sys.m_eMode = e_mode;
+              g_pageQuiz.m_isNeedDraw = true;
+              g_pageHint.m_isNeedDraw = true;
+              g_pageBtn.m_isNeedDraw = true;
+
+              g_pageBtn.m_isWantInput = g_Sys.IsModeQuiz() ? true : false;
+              g_pageHint.AutoShowBtn();
+            }
+
+            g_pageBtn.m_hwnd.onmousedown = function(st_event){
+              let iIndex = g_pageBtn.OnMouseDown(st_event);
+              if ( iIndex > 0){
+                g_Sys.m_Select = iIndex;
+                g_pageTimer.m_isNeedDraw = false;
+
+              }
+            }
+
+            g_pageHint.m_hwnd.onmousedown = function(st_event){
+              if (g_pageHint.OnMouseDown(st_event)){
+
+              }
+            }
+
+            g_pageQuiz.SetSys(g_Sys);
+            g_pageHint.SetSys(g_Sys);
+            g_pageBtn.SetSys(g_Sys);
+
+            g_Sys.SetRun(g_Sys.e_modeTitle);
+            g_Sys.m_isLoadImage = true;
+
+            g_Sys.OnTimerEx();
+
+            console.log('Image Load Complete Run!!');
+          }
+        }else if (g_Sys.IsModeTitle()){
+          g_Sys.OnTimerEx();
+        }else if (g_Sys.IsModeQuiz()){
+          g_Sys.OnTimerEx();
+        }else if (g_Sys.IsModeCheckSelect()){
+          if (false === g_pageQuiz.m_isAniLock && false === g_pageHint.m_isAniLock && false === g_pageBtn.m_isAniLock){
+
+          }
+          g_Sys.OnTimerEx();
+        }
+      }
+      setInterval(OnTimerEx,20);
+    </script>
+
+    <p>fdsfsdfsdfsdf</p>
+
+
+  </body>
+  <script type="text/javascript">
+    console.log(navigator.userAgent);
+  </script>
+</html>
