@@ -16,6 +16,11 @@
 
     <script type="text/javascript">
       function InitCanvas(i_Width){
+        console.log('Window Cx: ' + window.innerWidth + ',Window Cy: ' + window.innerHeight);
+
+        if (i_Width > window.innerWidth)
+          i_Width = window.innerWidth;
+
         let arstPos = [];
         arstPos.push({m_szIdCanvas : 'cvsQuiz', m_cx : i_Width, m_cy : 100});
         arstPos.push({m_szIdCanvas : 'cvsTimer', m_cx : i_Width, m_cy : Math.floor(i_Width / 10)});
@@ -41,6 +46,7 @@
         }
 
       }
+      
       InitCanvas(387);
     </script>
 
@@ -80,7 +86,7 @@
         <source  src="Snd/TimeOverFail.MP3" type = "">
       </audio>
       <audio preload="auto">
-        <source  src="Snd/BtnClick.MP3" type = "">
+        <source  src="Snd/BtnClick.wav" type = "">
       </audio>
     </div>
 
@@ -112,8 +118,6 @@
         console.log('Window Load');
          g_sprRobot.Load('Img/robot.png');
          g_sprBomb.Load('Img/Bomb1.png');
-        //  g_sprRobot.Load('Img/QuizOk.png');
-        // g_sprBomb.Load('Img/QuizNo.png');
          g_sprQuizOk.Load('Img/QuizOk.png');
         g_sprQuizNo.Load('Img/QuizNo.png');
         g_sprTimeOver.Load('Img/timeover.png');
@@ -139,7 +143,7 @@
     <script type="text/javascript" src="CQuizWnd.js?verson=1.2221"></script>
     <script type="text/javascript" src="CHintWnd.js?verson=1.2221"></script>
     <script type="text/javascript" src="CTimerWnd.js?verson=1.2221"></script>
-    
+
 
     <script type="text/javascript">
 
