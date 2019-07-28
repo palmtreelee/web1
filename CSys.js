@@ -1,3 +1,14 @@
+function CItemQuiz(i_First,i_Second){
+  this.m_iFirst = typeof i_First != 'undefined' ? i_First : 2;
+  this.m_iSecond = typeof i_Second != 'undefined' ? i_Second : 1;
+}
+CItemQuiz.prototype.m_iFirst = 2;
+CItemQuiz.prototype.m_iSecond = 1;
+CItemQuiz.prototype.Read = function(st_Item){
+  this.m_iFirst = st_Item.m_iFirst;
+  this.m_iSecond = st_Item.m_iSecond;
+}
+
 function CSys(){
 
 }
@@ -14,6 +25,9 @@ CSys.prototype.e_msgSetResult_wParamIsNewResult = 8;
 CSys.prototype.e_msgSetHitStart = 9;
 CSys.prototype.e_msgSetHitEnd = 10;
 CSys.prototype.e_msgTimeOver = 11;
+CSys.prototype.e_msgNextQuiz = 12;
+CSys.prototype.e_msgVoiceRetryEnd = 13;
+CSys.prototype.e_msgGameOver = 14;
 
 CSys.prototype.e_modeNone = 0;
 CSys.prototype.e_modeTitle = 1;
@@ -28,6 +42,9 @@ CSys.prototype.m_arstMsgQ = [];
 CSys.prototype.m_first = 10;
 CSys.prototype.m_Second = 6;
 CSys.prototype.m_Select = 0;
+CSys.prototype.m_arstQuiz = [];
+CSys.prototype.m_arstQuizFail = [];
+CSys.prototype.m_arstQuizSuccess = [];
 CSys.prototype.m_isLoadImage = false;
 CSys.prototype.m_eLevel = 300;
 CSys.prototype.m_BtnIdLevel = 0;
@@ -44,6 +61,29 @@ CSys.prototype.m_arszJosaYa   = ['이야','이야','야','이야','야','야','�
 CSys.prototype.m_arszJosaRa   = ['이라','이라','라','이라','라','라','이라','이라','이라','라','이라'];
 CSys.prototype.m_arszJosaRan  = ['이란','이란','란','이란','란','란','이란','이란','이란','란','이란'];
 CSys.prototype.m_arszJosaE   = ['이에','이에','에','이에','에','에','이에','이에','이에','에','이에'];
+
+CSys.prototype.GetCntQuizFail = function(){
+  return this.m_arstQuizFail.length;
+}
+
+CSys.prototype.GetCntQuizSuccess = function(){
+  return this.m_arstQuizSuccess.length;
+}
+
+CSys.prototype.GetCntTotalQuiz = function(){
+  return this.m_arstQuizSuccess.length + this.m_arstQuizFail.length + this.m_arstQuiz.length;
+}
+
+CSys.prototype.IsCanReTry = function(){
+  return (this.m_arstQuizFail.length >  0);
+}
+
+CSys.prototype.ReTryQuiz = function(){
+  this.m_arstQuiz = [];
+  this.m_arstQuiz = this.m_arstQuizFail.slice();
+  this.m_arstQuizFail = [];
+  this.m_arstQuizSuccess = [];
+}
 
 CSys.prototype.IsTimeOver = function(){return (0 === this.m_Select);}
 CSys.prototype.IsHitSucces = function(i_Select){
@@ -70,6 +110,39 @@ CSys.prototype.GetTimeQuizLimit = function(){
     return 2000*10;
   }
   console.log(this.m_eLevel);
+}
+
+CSys.prototype.CreateQuizMinus = function(){
+  this.m_arstQuiz = [];
+  this.m_arstQuizFail = [];
+  this.m_arstQuizSuccess = [];
+
+  let i = 2;
+  while (i < 19){
+    let j = 1;
+    while (j < i){
+      this.m_arstQuiz.push(new CItemQuiz(i,j));
+      j ++;
+    }
+    i ++
+  }
+
+  if (false==this.IsLevel1()){
+    let stItem = new CItemQuiz();
+    for (i = 0;i < (this.m_arstQuiz.length * 10) ;i ++){
+      j = Math.floor(Math.random() * this.m_arstQuiz.length);
+      if ( j >= this.m_arstQuiz.length)
+        j = this.m_arstQuiz.length - 1;
+      stItem.Read(this.m_arstQuiz[0]);
+      this.m_arstQuiz[0].Read(this.m_arstQuiz[j]);
+      this.m_arstQuiz[j].Read(stItem);
+    }
+  }
+
+  this.m_first = this.m_arstQuiz[0].m_iFirst;
+  this.m_Second = this.m_arstQuiz[0].m_iSecond;
+  this.m_arstQuiz.splice(0,1);
+
 }
 
 CSys.prototype.GetStrNumber = function(i_Num, sz_Josa){

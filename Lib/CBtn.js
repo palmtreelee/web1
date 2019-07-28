@@ -62,6 +62,31 @@ CBtn.prototype.GetRGB = function(){
     return this.m_Rgb;
 }
 
+CBtn.prototype.GetGradient = function(r,g,b){
+  var gRet=null;
+  if (this.m_cx===this.m_cy){
+    let siz=new CSize(this.m_cx,this.m_cy);
+    let pos=new CPoint(siz.GetCenterX(siz.cx * 2,this.m_x),siz.GetCenterY(siz.cy * 2,this.m_y));
+    gRet = this.m_stPage.GetGradientCircle(pos.x,pos.y,1,pos.x,pos.y,this.m_cx / 2);
+    console.log(pos);
+    console.log(siz);
+
+    gRet.addColorStop(0, 'RGB(' + Math.floor(r) + ',' + Math.floor(g) + ',' + Math.floor(b) + ')');
+    gRet.addColorStop(0.7, 'RGB(' + Math.floor(r * 0.85) + ',' + Math.floor(g * 0.85) + ',' + Math.floor(b * 0.85) + ')');
+    gRet.addColorStop(1, 'RGB(' + Math.floor(r * 0.50) + ',' + Math.floor(g * 0.50) + ',' + Math.floor(b * 0.50) + ')');
+
+  }else{
+      gRet = this.m_stPage.GetGradientLine(this.m_x,this.m_y,this.m_x,this.m_y+this.m_cy-1);
+      gRet.addColorStop(0, 'RGB(' + Math.floor(r * 0.75) + ',' + Math.floor(g * 0.75) + ',' + Math.floor(b * 0.75) + ')');
+      gRet.addColorStop(0.5, 'RGB(' + Math.floor(r) + ',' + Math.floor(g) + ',' + Math.floor(b) + ')');
+      gRet.addColorStop(1, 'RGB(' + Math.floor(r * 0.4) + ',' + Math.floor(g * 0.4) + ',' + Math.floor(b * 0.4) + ')');
+  }
+
+  console.log(gRet);
+
+  return gRet;
+}
+
 CBtn.prototype.SetShow = function(is_Show){
   if (this.m_Show != is_Show){
     this.m_Show = is_Show;
@@ -79,7 +104,8 @@ CBtn.prototype.SetEnable = function(is_Enable){
     return false;
 }
 
-CBtn.prototype.InitCBtn = function(sz_Name,x,y,cx,cy,st_Page,is_show,is_enable,i_ID){
+CBtn.prototype.InitCBtn = function(sz_Name,x,y,cx,cy,st_Page,is_Show,is_Enable,i_ID,f_RatioFont){
+  f_RatioFont = typeof f_RatioFont !== 'undefined' ? f_RatioFont : 0.7;
   this.m_x  = x;
   this.m_y  = y;
   this.m_cx = cx;
@@ -93,7 +119,7 @@ CBtn.prototype.InitCBtn = function(sz_Name,x,y,cx,cy,st_Page,is_show,is_enable,i
   this.m_Show = typeof is_Show !== 'undefined' ? is_Show : true;
   this.m_Enable = typeof is_Enable !== 'undefined' ? is_Enable : true;
 
-  this.m_szFont = Math.floor(this.m_cy*70/100) + 'px arial';
+  this.m_szFont = Math.floor(this.m_cy * f_RatioFont) + 'px arial';
 
   this.m_Rgb = new CColorBtn();
   this.m_RgbBackup = new CColorBtn();
@@ -106,7 +132,7 @@ CBtn.prototype.OnL_Down = function(x,y){
     x >= this.m_x && x <= this.m_Right &&
     y >= this.m_y && y <= this.m_Bottom);
   // console.log(Ret);
-  if (null !== this.m_sndClick)
+  if (Ret && null !== this.m_sndClick)
     this.m_sndClick.Play();
   return Ret;
  }

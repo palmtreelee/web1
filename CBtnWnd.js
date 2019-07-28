@@ -4,6 +4,7 @@ function CBtnWnd() {
 
 CBtnWnd.prototype = new CPage();
 CBtnWnd.prototype.m_arstBtn = [];
+CBtnWnd.prototype.m_btnReTry = null;
 CBtnWnd.prototype.m_First = 2;
 CBtnWnd.prototype.m_Second = 1;
 CBtnWnd.prototype.m_Select = 0;
@@ -13,6 +14,9 @@ CBtnWnd.prototype.m_isWantInput = false;
 CBtnWnd.prototype.m_isNeedDraw = false;
 CBtnWnd.prototype.m_iResult = 0;
 CBtnWnd.prototype.m_isSetHit = false;
+CBtnWnd.prototype.m_isDrawScore = false;
+
+CBtnWnd.prototype.m_eBtnReTry = 100;
 
 CBtnWnd.prototype.SetHit = function(){
   if (false === this.m_isSetHit){
@@ -64,31 +68,54 @@ CBtnWnd.prototype.AniCheckSelect = function (is_Start){
 }
 
 
-
+CBtnWnd.prototype.m_arposScore = [];
+CBtnWnd.prototype.m_sizScore = new CSize();
 CBtnWnd.prototype.Init = function(sz_CanvasID){
   this.InitCPage(sz_CanvasID);
   let e_CntLine = 5;
   let e_Gap = 4;
 
   let cx=Math.floor(this.m_cx / e_CntLine);
+  this.m_sizScore.Set(cx * e_CntLine,cx);
 
   let x = e_Gap;
   let y = e_Gap;
+  this.m_arposScore.push(new CPoint(x,y));
   let j = 1;
   for (i = 1;i < 20;i ++ , j ++){
     this.m_arstBtn.push(new CBtn());
-    this.m_arstBtn[i-1].InitCBtn(String(i),x,y,cx-e_Gap * 2,cx - e_Gap * 2,this,true,true,i);
-    this.m_arstBtn[i-1].m_sndClick = g_sndBtnClick;
+    let stBtn = this.m_arstBtn[i-1];
+    stBtn.InitCBtn(String(i),x,y,cx-e_Gap * 2,cx - e_Gap * 2,this,true,true,i);
+    stBtn.m_Rgb.m_szBack = stBtn.GetGradient(200,200,200);
+    stBtn.BackupRGB();
+    stBtn.m_sndClick = g_sndBtnClick;
 
     if (j >= e_CntLine){
       j = 0;
       x = e_Gap;
       y += cx;
+      this.m_arposScore.push(new CPoint(x,y));
     }
     else{
       x += cx;
     }
   }
+
+  let siz = new CSize();
+  siz.Set(Math.floor((cx * e_CntLine) * 0.8),Math.floor(cx * 0.75));
+  let pos = new CPoint();
+  pos.SetXY(siz.GetCenterX(this.m_cx),siz.GetCenterY(cx) + y -e_Gap);
+
+
+  this.m_btnReTry = new CBtn();
+  this.m_btnReTry.InitCBtn('틀린 문제만 재도전!',pos.x,pos.y,siz.cx,siz.cy,this,false,false,this.
+                            m_eBtnReTry,0.55);
+  this.m_btnReTry.m_sndClick = g_sndBtnClick;
+  let stRgb=new CColorBtn();
+  stRgb.Read(this.m_btnReTry.m_Rgb);
+  stRgb.m_szBack = '#940583';
+  stRgb.m_szFont = '#FFFFFF';
+  this.m_btnReTry.SetRGB(stRgb);
 }
 
 CBtnWnd.prototype.OnEndTTSCheckSelect = function(){
@@ -100,10 +127,60 @@ CBtnWnd.prototype.OnEndTTSSelect = function(){
   g_Sys.m_arstMsgQ.push(new CMsg(g_Sys.e_msgSelectVoiceStart));
 }
 
+CBtnWnd.prototype.OnEndTTSGameOver = function(){
+  g_Sys.m_arstMsgQ.push(new CMsg(g_Sys.e_msgGameOver));
+}
+
+CBtnWnd.prototype.OnEndTTSReTry = function(){
+  g_Sys.m_arstMsgQ.push(new CMsg(g_Sys.e_msgVoiceRetryEnd));
+}
+
+CBtnWnd.prototype.SetScore =function(is_AskReTry){
+  is_AskReTry = typeof is_AskReTry != 'undefined' ? is_AskReTry : false;
+  let isCanReTry = (g_Sys.GetCntQuizFail() > 0);
+  this.m_btnReTry.SetShow(is_AskReTry && isCanReTry);
+  this.m_btnReTry.SetEnable(is_AskReTry);
+  this.m_isDrawScore = true;
+  this.m_isNeedDraw = true;
+
+  if (false==is_AskReTry){
+    if (isCanReTry){
+      responsiveVoice.speak('틀린 문제가 있네! 틀린 문제만 다시 풀어보자!','Korean Female',
+      {onend: this.OnEndTTSReTry});
+    }else{
+      responsiveVoice.speak('문제를 다 풀었구나! 축하해!','Korean Female',
+      {onend: this.OnEndTTSGameOver});
+    }
+  }
+}
+
 CBtnWnd.prototype.Draw = function(){
   if (g_Sys.IsModeTitle()){
     this.DrawFillBox(0,0,this.m_cx,this.m_cy,'RGB(255,255,255)');
 
+    this.m_isNeedDraw=false;
+  }
+  else if (this.m_isDrawScore){
+    this.DrawOutLineBox(0,0,this.m_cx,this.m_cy,5,"rgb(255,255,255)","rgb(0,0,0)");
+    let szFont = Math.floor(this.m_sizScore.cy * 0.6) + 'px arial';
+    this.SetCenterV(true);
+    if (this.m_arposScore.length >= 3){
+      let pos = new CPoint();
+      pos.SetXY(this.m_arposScore[0].x,this.m_arposScore[0].y);
+      pos.SetXY(this.m_sizScore.GetCenterX(this.m_sizScore.cx * 2,pos.x),this.m_sizScore.GetCenterY(this.m_sizScore.cy * 2,pos.y))
+      this.DrawText(pos.x, pos.y, '전체문제 : ' + g_Sys.GetCntTotalQuiz() + '개', szFont, 'center', '#000000');
+      pos.y += this.m_sizScore.cy;
+      this.DrawText(pos.x, pos.y, '정 답 : ' + g_Sys.GetCntQuizSuccess() + '개', szFont, 'center', '#052F7D');
+      pos.y += this.m_sizScore.cy;
+      if (g_Sys.IsCanReTry()){
+          this.DrawText(pos.x, pos.y, '틀린문제 : ' + g_Sys.GetCntQuizFail() + '개', szFont, 'center', '#7E0D04');
+      }else{
+          this.DrawText(pos.x, pos.y, '축하합니다.!', szFont, 'center', '#7E0D04');
+      }
+      pos.y += this.m_sizScore.cy;
+    }
+
+    this.m_btnReTry.DrawDef();
     this.m_isNeedDraw=false;
   }
   else{
@@ -145,9 +222,14 @@ CBtnWnd.prototype.Draw = function(){
 CBtnWnd.prototype.RestoreBtn = function(is_Enable,is_Redraw){
   is_Enable = typeof is_Enable !== 'undefined' ? is_Enable : true;
   is_Redraw = typeof is_Redraw !== 'undefined' ? is_Redraw : false;
+  let i = 1;
   for (var key in this.m_arstBtn){
     this.m_arstBtn[key].RestoreRGB();
     this.m_arstBtn[key].SetEnable(is_Enable);
+    if (g_Sys.IsLevel1()){
+      this.m_arstBtn[key].SetShow(i <= g_Sys.m_first);
+    }
+    i ++;
   }
 
   if (is_Redraw)
@@ -158,7 +240,7 @@ CBtnWnd.prototype.SpeakCheck = function (i_Select){
   if (typeof i_Select !== 'undefined' && i_Select >= 0 && i_Select <= this.m_arstBtn.length){
     for (let i=1;i <= this.m_arstBtn.length;i ++){
       let iIndex= i - 1;
-      this.m_arstBtn[iIndex].BackupRGB()
+      this.m_arstBtn[iIndex].BackupRGB();
       var rgb=this.m_arstBtn[iIndex].GetRGB();
       if (i == i_Select){
           rgb.m_szBack = '#2E64FE';
@@ -194,6 +276,15 @@ CBtnWnd.prototype.OnMouseDown = function(st_Event)
 {
   if (g_Sys.IsModeTitle()){
 
+  }else if (this.m_isDrawScore){
+    if (true === this.m_btnReTry.OnL_Down(st_Event.offsetX,st_Event.offsetY)){
+      g_Sys.ReTryQuiz();
+      g_Sys.m_arstMsgQ.push(new CMsg(g_Sys.e_msgNextQuiz))
+      this.m_btnReTry.SetShow(false);
+      this.m_isDrawScore = false;
+      this.m_isNeedDraw = true;
+      return 0;
+    }
   }else if (g_Sys.IsModeQuiz()){
     if (this.m_isWantInput){
       let index=1;

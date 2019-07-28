@@ -46,7 +46,7 @@
         }
 
       }
-      
+
       InitCanvas(387);
     </script>
 
@@ -91,9 +91,9 @@
     </div>
 
     <script src='https://code.responsivevoice.org/responsivevoice.js'></script>
-    <script type="text/javascript" src="CSys.js?verson=1.411"></script>
-    <script type="text/javascript" src="./Lib/CSound.js?verson=1.421"></script>
-    <script type="text/javascript" src="./Lib/CSprite.js?verson=1.421"></script>
+    <script type="text/javascript" src="CSys.js?verson=1.1412"></script>
+    <script type="text/javascript" src="./Lib/CSound.js?verson=1.1422"></script>
+    <script type="text/javascript" src="./Lib/CSprite.js?verson=1.1422"></script>
     <script type="text/javascript">
       var g_Sys = new CSys();
       var g_sprRobot = new CSprite();
@@ -136,13 +136,13 @@
       }
     </script>
 
-    <script type="text/javascript" src="./Lib/PageDraw.js?verson=1.413"></script>
-    <script type="text/javascript" src="./Lib/CMoveImg.js?verson=1.222"></script>
-    <script type="text/javascript" src="./Lib/CBtn.js?verson=1.222"></script>
-    <script type="text/javascript" src="CBtnWnd.js?verson=1.211"></script>
-    <script type="text/javascript" src="CQuizWnd.js?verson=1.2221"></script>
-    <script type="text/javascript" src="CHintWnd.js?verson=1.2221"></script>
-    <script type="text/javascript" src="CTimerWnd.js?verson=1.2221"></script>
+    <script type="text/javascript" src="./Lib/PageDraw.js?verson=1.1413"></script>
+    <script type="text/javascript" src="./Lib/CMoveImg.js?verson=1.1222"></script>
+    <script type="text/javascript" src="./Lib/CBtn.js?verson=1.1222"></script>
+    <script type="text/javascript" src="CBtnWnd.js?verson=1.1211"></script>
+    <script type="text/javascript" src="CQuizWnd.js?verson=1.12221"></script>
+    <script type="text/javascript" src="CHintWnd.js?verson=1.12221"></script>
+    <script type="text/javascript" src="CTimerWnd.js?verson=1.12221"></script>
 
 
     <script type="text/javascript">
@@ -175,10 +175,15 @@
                 let stMsg=g_Sys.m_arstMsgQ[0];
                 console.log(stMsg);
                 if (g_Sys.e_msgQuizVoiceStart === stMsg.eMsg){
-
+                  g_pageTimer.SetBar();
                 }else if (g_Sys.e_msgTitleEnd_wParam1IsBtnID === stMsg.eMsg){
+
                   g_Sys.m_eLevel = stMsg.wParam;
-                  g_Sys.SetRun(g_Sys.e_modeQui);
+                  g_Sys.CreateQuizMinus();
+                  g_pageQuiz.SetSys(g_Sys);
+                  g_pageHint.SetSys(g_Sys);
+                  g_pageBtn.SetSys(g_Sys);
+                  g_Sys.SetRun(g_Sys.e_modeQuiz);
                   g_pageBtn.RestoreBtn(false,true);
                 }else if (g_Sys.e_msgTimeOver === stMsg.eMsg){
                   g_Sys.m_Select = 0;
@@ -208,22 +213,32 @@
                 }else if (g_Sys.e_msgSetHitStart === stMsg.eMsg){
                   g_pageBtn.SetHit();
                 }else if (g_Sys.e_msgSetHitEnd === stMsg.eMsg){
-                  g_Sys.m_Second ++;
-                  if (g_Sys.m_Second >= g_Sys.m_first){
-                    g_Sys.m_Second = 1;
-                    g_Sys.m_first ++;
+                  g_pageTimer.SetWantNextQuiz();
+                }else if (g_Sys.e_msgVoiceRetryEnd === stMsg.eMsg){
+                  g_pageBtn.SetScore(true);
+                }else if (g_Sys.e_msgGameOver === stMsg.eMsg){
+
+                }else if (g_Sys.e_msgNextQuiz === stMsg.eMsg){
+                  if (g_Sys.m_arstQuiz.length <= 0){
+                    g_pageBtn.SetScore();
+                  }else{
+                    let stNewQuiz = g_Sys.m_arstQuiz[0];
+                    g_Sys.m_Second = stNewQuiz.m_iSecond;
+                    g_Sys.m_first = stNewQuiz.m_iFirst;
+                    g_Sys.m_arstQuiz.splice(0,1);
+
+                    g_Sys.m_Select = 0;
+
+                    g_pageQuiz.SetSys(g_Sys);
+                    g_pageHint.SetSys(g_Sys);
+                    g_pageBtn.SetSys(g_Sys);
+
+                    g_pageQuiz.m_isTTS = false;
+
+                    g_pageBtn.RestoreBtn(false,true);
+                    g_Sys.SetRun(g_Sys.e_modeQuiz);
                   }
 
-                  g_Sys.m_Select = 0;
-
-                  g_pageQuiz.SetSys(g_Sys);
-                  g_pageHint.SetSys(g_Sys);
-                  g_pageBtn.SetSys(g_Sys);
-
-                  g_pageQuiz.m_isTTS = false;
-
-                  g_pageBtn.RestoreBtn(false,true);
-                  g_Sys.SetRun(g_Sys.e_modeQuiz);
                 }
                 g_Sys.m_arstMsgQ.splice(0,1);
               }
@@ -250,6 +265,12 @@
               let iIndex = g_pageBtn.OnMouseDown(st_event);
               if ( iIndex > 0){
                 g_Sys.m_Select = iIndex;
+                if (g_Sys.IsHitSucces()){
+                  g_Sys.m_arstQuizSuccess.push(new CItemQuiz(g_Sys.m_first,g_Sys.m_Second));
+                }else{
+                  g_Sys.m_arstQuizFail.push(new CItemQuiz(g_Sys.m_first,g_Sys.m_Second));
+                }
+
                 g_pageTimer.m_isNeedDraw = false;
 
               }
@@ -257,6 +278,12 @@
 
             g_pageHint.m_hwnd.onmousedown = function(st_event){
               if (g_pageHint.OnMouseDown(st_event)){
+
+              }
+            }
+
+            g_pageTimer.m_hwnd.onmousedown = function(st_event){
+              if (g_pageTimer.OnMouseDown(st_event)){
 
               }
             }

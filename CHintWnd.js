@@ -15,6 +15,7 @@ CHintWnd.prototype.m_arstAniCheckSelect = [];
 CHintWnd.prototype.m_isSetHit = false;
 CHintWnd.prototype.m_posHit = new CPoint();
 CHintWnd.prototype.m_iBtnID = 0;
+CHintWnd.prototype.m_fAlphaFirstHide = 0;
 
 CHintWnd.prototype.OnTimerEx = function(t_Cur)
 {
@@ -39,6 +40,7 @@ CHintWnd.prototype.e_kindHideSecond = 1;
 CHintWnd.prototype.e_kindHideFirst = 2;
 CHintWnd.prototype.e_kindWait = 3;
 CHintWnd.prototype.e_kindFlyBomb = 4;
+CHintWnd.prototype.e_kindFirstHide = 5;
 
 function CAniCheckSelect(){
 
@@ -62,7 +64,8 @@ CHintWnd.prototype.AniCheckSelect = function (is_Start){
   {
     let tWait = 500;
     let tFly = 200;
-    let tFlyWait = 170;
+    let arFlyWait= [100,550,500,450,400,350,300,250,200]
+    let tFlyWait = (g_Sys.m_Second <= 8) ? arFlyWait[g_Sys.m_Second]: 170;
     let tHide = 400;
     let tBomb = 110;
     this.m_tSet = new Date().getTime();
@@ -72,8 +75,8 @@ CHintWnd.prototype.AniCheckSelect = function (is_Start){
     this.m_arstAniCheckSelect.push(new CAniCheckSelect());
     let stAni=this.m_arstAniCheckSelect[this.m_arstAniCheckSelect.length - 1];
     stAni.SetPos(0,0,0,0,tCur,tWait,0,1);
-    if (this.m_arstPosHide.length > 0){
-      stAni.SetAlpha(this.m_arstPosHide[0].fAlpha,0);
+    if (this.m_arstPosBomb.length > 0){
+      stAni.SetAlpha(this.m_arstPosBomb[0].fAlpha,0);
     }
     stAni.m_eMode = this.e_kindWait;
 
@@ -141,6 +144,12 @@ CHintWnd.prototype.AniCheckSelect = function (is_Start){
         stBomb.SetAlpha(0.5,1);
         stBomb.m_isSndSuccess = true;
 
+        this.m_arstAniCheckSelect.push(new CAniCheckSelect());
+        stBomb=this.m_arstAniCheckSelect[this.m_arstAniCheckSelect.length - 1];
+        stBomb.SetPos(0,0,0,0,tCur,250,tWaitAppend,-1.6);
+        stBomb.SetAlpha(0,1);
+        stBomb.m_eMode = this.e_kindFirstHide;
+
         // stBomb.SetZoom(1,3);
       }
       tWaitBombFly += tFly+tFlyWait;
@@ -172,6 +181,7 @@ CHintWnd.prototype.AniCheckSelect = function (is_Start){
           if (this.e_kindWait ==  stAni.m_eMode){
             this.m_eAni = this.e_kindFlyBomb;
             this.m_arstPosHide = [];
+            this.m_fAlphaPosHide = 0;
             g_Sys.m_arstMsgQ.push(new CMsg(g_Sys.e_msgSetResult_wParamIsNewResult,this.m_CntFirst));
           }else if (this.e_kindHideSecond ==  stAni.m_eMode){
 
@@ -198,6 +208,8 @@ CHintWnd.prototype.AniCheckSelect = function (is_Start){
                   g_Sys.m_arstMsgQ.push(new CMsg(g_Sys.e_msgSetResult_wParamIsNewResult,this.m_CntFirst));
                   // console.log(g_Sys.m_arstMsgQ[g_Sys.m_arstMsgQ.length - 1]);
                 }
+              }else if(this.e_kindFirstHide==stAni.m_eMode){
+                this.m_fAlphaFirstHide = stAni.fAlphaCur;
               }
 
               if (stAni.m_isSndDie){
@@ -260,6 +272,9 @@ CHintWnd.prototype.Init = function(sz_CanvasID){
   let arszBtnName = ['초급 뺄셈 시작','중급 뺄셈 시작','고급 뺄셈 시작'];
   let arszBtnTTS = ['초급','중급','고급'];
   let arBtnID = [g_Sys.e_Level1,g_Sys.e_Level2,g_Sys.e_Level3];
+  let arRgbR =[0,8,223];
+  let arRgbG =[64,138,1];
+  let arRgbB =[255,41,1];
   let arszRGB = ['#0040FF','#088A29','#DF0101'];
   let gap = 4;
   let cx = Math.floor(this.m_cx * 0.7);
@@ -273,9 +288,12 @@ CHintWnd.prototype.Init = function(sz_CanvasID){
     this.m_arstBtn.push(new CBtn());
     let stBtn = this.m_arstBtn[i];
     stBtn.InitCBtn(arszBtnName[i],x,y,cx,cy - gap*2  ,this,true,true,arBtnID[i]);
+
     stBtn.m_szFont = Math.floor(stBtn.m_cy * 0.5) + 'px arial';
     // stBtn.InitCBtn(arszBtnName[i],x,y,cx,cx,this,true,true,arBtnID[i]);
-    stRGB.m_szBack = arszRGB[i];
+
+    // stRGB.m_szBack = arszRGB[i];
+    stRGB.m_szBack = stBtn.GetGradient(arRgbR[i],arRgbG[i],arRgbB[i]);
     stBtn.SetRGB(stRGB);
     stBtn.BackupRGB();
     stBtn.m_szTemp = arszBtnTTS[i];
@@ -321,7 +339,7 @@ CHintWnd.prototype.AutoShowBtn = function(){
 
 CHintWnd.prototype.OnEndTTSLevel = function(){
   // g_Sys.m_arstMsgQ.push(new CMsg(g_Sys.e_msgTitleEnd_wParam1IsBtnID,g_Sys.m_BtnIdLevel));
-  g_Sys.m_arstMsgQ.push(new CMsg(g_Sys.e_msgTitleEnd_wParam1IsBtnID,3));
+  g_Sys.m_arstMsgQ.push(new CMsg(g_Sys.e_msgTitleEnd_wParam1IsBtnID,g_Sys.m_BtnIdLevel));
 }
 
 CHintWnd.prototype.OnMouseDown = function(st_Event)
@@ -336,6 +354,7 @@ CHintWnd.prototype.OnMouseDown = function(st_Event)
       this.m_iBtnID = iRetID;
       g_Sys.m_BtnIdLevel = iRetID;
       console.log(g_Sys.m_BtnIdLevel,iRetID);
+      break;
     }
   }
 
@@ -377,6 +396,7 @@ CHintWnd.prototype.OnEndTTSHit = function(){
 CHintWnd.prototype.m_arstPosFirst = [];
 CHintWnd.prototype.m_arstPosHide = [];
 CHintWnd.prototype.m_arstPosBomb = [];
+CHintWnd.prototype.m_arstPosFirstHide = [];
 CHintWnd.prototype.Draw = function(){
   if (g_Sys.IsModeTitle()){
     this.DrawFillBox(0,0,this.m_cx,this.m_cy,'RGB(255,255,255)');
@@ -414,6 +434,16 @@ CHintWnd.prototype.Draw = function(){
         this.m_arstPosFirst.forEach(function(stPos){
           this.DrawSprite(stPos.x,stPos.y,stPos.stSpr,stPos.iFrame,stPos.fAlpha);
         },this);
+
+        if (this.m_fAlphaFirstHide > 0){
+          this.m_arstPosFirstHide.forEach(function(stPos){
+            this.DrawSprite(stPos.x,stPos.y,stPos.stSpr,stPos.iFrame,this.m_fAlphaFirstHide);
+            let stSpr = stPos.stSpr;
+            let siz = new CSize(stSpr.GetCxFrame(stPos.iFrame), stSpr.GetCyFrame(stPos.iFrame));
+            let szRgb = 'RGBA(255,0,0,' + this.m_fAlphaFirstHide + ')';
+            this.DrawX(stPos.x,stPos.y,siz.cx,siz.cy,'#ff0000',6);
+          },this);
+        }
 
         this.m_arstPosHide.forEach(function(stPos){
           this.DrawSprite(stPos.x,stPos.y,stPos.stSpr,stPos.iFrame,this.m_fAlphaPosHide);
@@ -462,8 +492,10 @@ CHintWnd.prototype.Draw = function(){
         if (this.m_isNeedGetPos){
           this.m_arstPosBomb = [];
           this.m_arstPosFirst = [];
+          this.m_arstPosFirstHide = [];
           this.m_arstPosHide = [];
-          this.m_fAlphaPosHide = 0.6;
+          this.m_fAlphaPosHide = g_Sys.IsLevel1() ? 0.6 : 0.15;
+          this.m_fAlphaFirstHide = 0;
         }
 
         let cx = stFrame.cxDest + 2;
@@ -472,19 +504,30 @@ CHintWnd.prototype.Draw = function(){
         let j  = 1;
         for (let i = 1;i <= this.m_First;i ++){
           this.DrawSprite(x,y,g_sprRobot,CntGrid);
+          let isDrawBomb =(i + this.m_Second) > this.m_First;
+
           if (this.m_isNeedGetPos){
             this.m_arstPosFirst.push(new CPosHintWnd());
             this.m_arstPosFirst[this.m_arstPosFirst.length - 1].Init(x,y,CntGrid,g_sprRobot,1);
+            if (isDrawBomb){
+              this.m_arstPosFirstHide.push(new CPosHintWnd());
+              this.m_arstPosFirstHide[this.m_arstPosFirstHide.length - 1].Init(x,y,CntGrid,g_sprRobot,1);
+            }
           }
 
-          if ((i + this.m_Second) > this.m_First){
-            this.DrawSprite(x+OffX,y,g_sprRobot,CntGrid,0.3);
+          if (g_Sys.IsLevel3()){
+            isDrawBomb = (i <= this.m_Second);
+          }
+
+
+          if (isDrawBomb){
+            this.DrawSprite(x+OffX,y,g_sprRobot,CntGrid,this.m_fAlphaPosHide / 2);
             this.DrawSprite(x+OffX,y,g_sprBomb,CntGrid);
             if (this.m_isNeedGetPos){
               this.m_arstPosBomb.push(new CPosHintWnd());
               this.m_arstPosBomb[this.m_arstPosBomb.length - 1].Init(x+OffX,y,CntGrid,g_sprBomb,this.m_fAlphaPosHide / 2);
             }
-          }else{
+          }else if (false===g_Sys.IsLevel3()){
             this.DrawSprite(x+OffX,y,g_sprRobot,CntGrid,this.m_fAlphaPosHide);
             if (this.m_isNeedGetPos){
               this.m_arstPosHide.push(new CPosHintWnd());

@@ -162,6 +162,7 @@ CQuizWnd.prototype.Draw = function (){
     if (false === this.m_isTTS){
       this.m_isTTS = true;
       responsiveVoice.speak(g_Sys.GetStrQuiz(),'Korean Female',{onend : this.OnEndTTSQuiz});
+      g_Sys.m_arstMsgQ.push(new CMsg(g_Sys.e_msgQuizVoiceStart));
     }
 
     this.AniCheckSelect(false);

@@ -24,7 +24,23 @@ CSprite.prototype.m_cySrc = 0;
 CSprite.prototype.m_cx = 0;
 CSprite.prototype.m_cy = 0;
 CSprite.prototype.m_CntFail = 0;
-CSprite.prototype.m_arstFrame;
+CSprite.prototype.m_arstFrame = [];
+
+CSprite.prototype.GetCxFrame =function(i_Frame){
+  if (typeof i_Frame != 'undefined' && i_Frame >= 0 && i_Frame < this.m_arstFrame.length){
+    return this.m_arstFrame[i_Frame].cxDest;
+  }else{
+    return 1;
+  }
+}
+
+CSprite.prototype.GetCyFrame =function(i_Frame){
+  if (typeof i_Frame != 'undefined' && i_Frame >= 0 && i_Frame < this.m_arstFrame.length){
+    return this.m_arstFrame[i_Frame].cyDest;
+  }else{
+    return 1;
+  }
+}
 
 CSprite.prototype.ReLoadSize = function(){
   if (this.m_isLoad && this.m_arstFrame.length > 0 && this.m_cxSrc <= 0){

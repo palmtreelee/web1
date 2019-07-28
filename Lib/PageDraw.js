@@ -1,5 +1,6 @@
-function CPoint(){
-
+function CPoint(x,y){
+  this.x = typeof x !== 'undefined' ? x : 0;
+  this.y = typeof y !== 'undefined' ? y : 0;
 }
 
 CPoint.prototype.x = 0;
@@ -9,14 +10,33 @@ CPoint.prototype.SetXY = function(x,y){
   this.y = y;
 }
 
-function CSize(){
-
+function CSize(cx,cy){
+  this.cx = typeof cx !== 'undefined' ? cx : 0;
+  this.cy = typeof cy !== 'undefined' ? cy : 0;
 }
 CSize.prototype.cx = 1;
 CSize.prototype.cy = 1;
 CSize.prototype.Set = function(cx,cy){
   this.cx = cx;
   this.cy = cy;
+}
+
+CSize.prototype.GetCenterX = function(cx,offX){
+  offX = typeof offX != 'undefined' ? offX : 0;
+  if (typeof cx === 'undefined'){
+    return this.cx / 2;
+  }else{
+    return (cx - this.cx) / 2 + offX;
+  }
+}
+
+CSize.prototype.GetCenterY = function(cy,offY){
+  offY = typeof offY != 'undefined' ? offY : 0;
+  if (typeof cy === 'undefined'){
+    return this.cy / 2;
+  }else{
+    return (cy - this.cy) / 2 + offY;
+  }
 }
 
 function CMsg(eMsg,wParam,lParam,szParam,stParam){
@@ -200,4 +220,12 @@ CPage.prototype.SetBottom = function(is_Bottom){
  else{
    this.m_dc.textBaseline = 'top';
  }
+}
+
+CPage.prototype.GetGradientLine = function(x,y,x2,y2){
+  return this.m_dc.createLinearGradient(x,y,x2,y2);
+}
+
+CPage.prototype.GetGradientCircle = function(x,y,r,x2,y2,r2){
+  return this.m_dc.createRadialGradient(x,y,r,x2,y2,r2);
 }
