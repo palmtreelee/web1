@@ -120,12 +120,15 @@ CSys.prototype.CreateQuizMinus = function(){
   let i = 2;
   while (i < 19){
     let j = 1;
-    while ((j < i) && (j + 10) >= i){
-      this.m_arstQuiz.push(new CItemQuiz(i,j));
+    while (j < i){
+      if ((i - j) <= 10 && j <= 10){
+        this.m_arstQuiz.push(new CItemQuiz(i,j));
+      }
       j ++;
     }
     i ++
   }
+  console.log(this.m_arstQuiz);
 
   if (false==this.IsLevel1()){
     let stItem = new CItemQuiz();
