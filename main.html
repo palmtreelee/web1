@@ -91,9 +91,9 @@
     </div>
 
     <script src='https://code.responsivevoice.org/responsivevoice.js'></script>
-    <script type="text/javascript" src="CSys.js?verson=1.1412"></script>
-    <script type="text/javascript" src="./Lib/CSound.js?verson=1.1422"></script>
-    <script type="text/javascript" src="./Lib/CSprite.js?verson=1.1422"></script>
+    <script type="text/javascript" src="CSys.js?verson=1.1512"></script>
+    <script type="text/javascript" src="./Lib/CSound.js?verson=1.2422"></script>
+    <script type="text/javascript" src="./Lib/CSprite.js?verson=1.2422"></script>
     <script type="text/javascript">
       var g_Sys = new CSys();
       var g_sprRobot = new CSprite();
@@ -136,13 +136,13 @@
       }
     </script>
 
-    <script type="text/javascript" src="./Lib/PageDraw.js?verson=1.1413"></script>
-    <script type="text/javascript" src="./Lib/CMoveImg.js?verson=1.1222"></script>
-    <script type="text/javascript" src="./Lib/CBtn.js?verson=1.1222"></script>
-    <script type="text/javascript" src="CBtnWnd.js?verson=1.1211"></script>
-    <script type="text/javascript" src="CQuizWnd.js?verson=1.12221"></script>
-    <script type="text/javascript" src="CHintWnd.js?verson=1.12221"></script>
-    <script type="text/javascript" src="CTimerWnd.js?verson=1.12221"></script>
+    <script type="text/javascript" src="./Lib/PageDraw.js?verson=1.2413"></script>
+    <script type="text/javascript" src="./Lib/CMoveImg.js?verson=1.2222"></script>
+    <script type="text/javascript" src="./Lib/CBtn.js?verson=1.2222"></script>
+    <script type="text/javascript" src="CBtnWnd.js?verson=1.2211"></script>
+    <script type="text/javascript" src="CQuizWnd.js?verson=1.22221"></script>
+    <script type="text/javascript" src="CHintWnd.js?verson=1.22221"></script>
+    <script type="text/javascript" src="CTimerWnd.js?verson=1.22221"></script>
 
 
     <script type="text/javascript">
@@ -277,13 +277,19 @@
             }
 
             g_pageHint.m_hwnd.onmousedown = function(st_event){
-              if (g_pageHint.OnMouseDown(st_event)){
+              if (g_pageTimer.IsCanNextQuiz()){
+                g_pageTimer.GoNextQuiz();
+                return;
+              }else if (g_pageHint.OnMouseDown(st_event)){
 
               }
             }
 
             g_pageTimer.m_hwnd.onmousedown = function(st_event){
-              if (g_pageTimer.OnMouseDown(st_event)){
+              if (g_pageTimer.IsCanNextQuiz()){
+                g_pageTimer.GoNextQuiz();
+                return;
+              }else if (g_pageTimer.OnMouseDown(st_event)){
 
               }
             }

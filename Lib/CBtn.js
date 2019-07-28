@@ -46,6 +46,9 @@ CBtn.prototype.m_RgbBackup;
 
 CBtn.prototype.m_szFont = null;
 
+CBtn.prototype.IsShow = function(){return this.m_Show;}
+CBtn.prototype.IsEnable = function(){return this.m_Enable;}
+
 CBtn.prototype.BackupRGB = function(){
     this.m_RgbBackup.Read(this.m_Rgb);
 }

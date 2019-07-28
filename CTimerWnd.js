@@ -42,11 +42,19 @@ CTimerWnd.prototype.Init = function(sz_CanvasID){
   stBtn.SetRGB(stRgb);
 }
 
+CTimerWnd.prototype.IsCanNextQuiz = function(){
+  return (this.m_btnWantNextQuiz.IsShow() && this.m_btnWantNextQuiz.IsEnable());
+}
+
+CTimerWnd.prototype.GoNextQuiz = function(){
+  this.m_btnWantNextQuiz.SetEnable(false);
+  this.m_isNeedDraw = true;
+  g_Sys.m_arstMsgQ.push(new CMsg(g_Sys.e_msgNextQuiz));
+}
+
 CTimerWnd.prototype.OnMouseDown = function(st_Event){
   if (true === this.m_btnWantNextQuiz.OnL_Down(st_Event.offsetX,st_Event.offsetY)){
-    this.m_btnWantNextQuiz.SetEnable(false);
-    this.m_isNeedDraw = true;
-    g_Sys.m_arstMsgQ.push(new CMsg(g_Sys.e_msgNextQuiz));
+    this.GoNextQuiz();
   }
 }
 
