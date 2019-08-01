@@ -228,6 +228,7 @@ CDrageGameWnd.prototype.AniJudgment = function (is_Start,is_Ok)
 CDrageGameWnd.prototype.Draw = function(){
   this.m_isNeedDraw = false;
 
+  // this.DrawOutLineBox(0,0,this.m_cx,this.m_cy,1,this.IsTouch() ? '#00FFFF' : "#FBF8DF","rgb(0,0,0)");
   this.DrawOutLineBox(0,0,this.m_cx,this.m_cy,1,"#FBF8DF","rgb(0,0,0)");
   this.m_arbtnQuiz.forEach(function(stBtn){
     stBtn.DrawDef();
@@ -391,13 +392,16 @@ CDrageGameWnd.prototype.OnMouseDown = function(st_Event)
   if (this.IsCanCtrl() && false===this.m_isStartDrag)
   {
     // console.log('CDrageGameWnd.prototype.OnMouseDown');
+    // this.DrawFillBox(0,0,100,100,'#FF0000');
+    let posM = this.GetPosFromEvent(st_Event);
+
     let i;
     for (i = 0;i < this.m_arbtnQuiz.length;i ++)
     {
-      if (true===this.m_arbtnQuiz[i].OnL_Down(st_Event.offsetX,st_Event.offsetY))
+      if (true===this.m_arbtnQuiz[i].OnL_Down(posM.x,posM.y))
       {
         this.m_btnClick=this.m_arbtnQuiz[i];
-        this.m_posMouse.SetXY(st_Event.offsetX,st_Event.offsetY);
+        this.m_posMouse.SetXY(posM.x,posM.y);
         this.m_isNeedDraw=true;
         this.m_isStartDrag = true;
         break;
@@ -422,7 +426,6 @@ CDrageGameWnd.prototype.OnMouseUp = function(st_Event){
 
       if (this.m_iIndexLink >= 0)
       {
-
         let stResult = this.m_arstResult[this.m_iIndexLink];
         let stQuiz = this.m_btnClick.m_stTemp;
         let isOk = stQuiz.GetResult() == stResult.m_iResult;
@@ -442,17 +445,28 @@ CDrageGameWnd.prototype.OnMouseUp = function(st_Event){
 
 CDrageGameWnd.prototype.OnMouseMove = function(st_Event){
   if (true === this.m_isStartDrag){
-      this.m_posMouse.SetXY(st_Event.offsetX,st_Event.offsetY);
+      // if (this.IsTouch())
+      //   st_Event.preventDefault();
+      let posM = this.GetPosFromEvent(st_Event);
+      this.m_posMouse.SetXY(posM.x,posM.y);
       this.m_isNeedDraw = true;
   }
 }
 
 CDrageGameWnd.prototype.Init = function(sz_CanvasID,sz_Div){
   this.InitCPage(sz_CanvasID,sz_Div);
-  this.m_hwnd.addEventListener('mousemove',this.OnMouseMove.bind(this),false);
-  this.m_hwnd.addEventListener('mouseup',this.OnMouseUp.bind(this),false);
-  this.m_hwnd.addEventListener('mouseout',this.OnMouseOut.bind(this),false);
-  this.m_hwnd.addEventListener('mousedown',this.OnMouseDown.bind(this),false);
+  if (this.IsTouch()) {
+     this.m_hwnd.addEventListener('touchstart', this.OnMouseDown.bind(this), false);
+     this.m_hwnd.addEventListener('touchmove', this.OnMouseMove.bind(this), false);
+     this.m_hwnd.addEventListener('touchend', this.OnMouseUp.bind(this), false);
+  } else {
+    this.m_hwnd.addEventListener('mousemove',this.OnMouseMove.bind(this),false);
+    this.m_hwnd.addEventListener('mouseup',this.OnMouseUp.bind(this),false);
+    this.m_hwnd.addEventListener('mouseout',this.OnMouseOut.bind(this),false);
+    this.m_hwnd.addEventListener('mousedown',this.OnMouseDown.bind(this),false);
+  }
+
+
 
   this.m_cxUnit = Math.floor(this.m_cx / 6);
   g_sprRedX.AddFrame(this.m_cxUnit,this.m_cxUnit);

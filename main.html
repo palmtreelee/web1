@@ -119,9 +119,9 @@
     </div>
 
     <script src='https://code.responsivevoice.org/responsivevoice.js'></script>
-    <script type="text/javascript" src="CSys.js?verson=1.12"></script>
-    <script type="text/javascript" src="./Lib/CSound.js?verson=1.42422"></script>
-    <script type="text/javascript" src="./Lib/CSprite.js?verson=1.42422"></script>
+    <script type="text/javascript" src="CSys.js?verson=1.512"></script>
+    <script type="text/javascript" src="./Lib/CSound.js?verson=1.542422"></script>
+    <script type="text/javascript" src="./Lib/CSprite.js?verson=1.542422"></script>
     <script type="text/javascript">
       var g_Sys = new CSys();
       var g_arSprite = new Array();
@@ -179,17 +179,23 @@
         g_sndDDDD.Load("Snd/DingDongDengDong.wav");
         g_sndDragGameComplete.Load("Snd/DragGameComplete.wav");
 
+        if (self.name != 'reload')
+        {
+          self.name = 'reload';
+          self.location.reload(true);
+        }
+        else self.name = '';
       }
     </script>
 
-    <script type="text/javascript" src="./Lib/PageDraw.js?verson=1.42413"></script>
-    <script type="text/javascript" src="./Lib/CMoveImg.js?verson=1.42222"></script>
-    <script type="text/javascript" src="./Lib/CBtn.js?verson=1.42222"></script>
-    <script type="text/javascript" src="CBtnWnd.js?verson=1.42211"></script>
-    <script type="text/javascript" src="CQuizWnd.js?verson=1.422221"></script>
-    <script type="text/javascript" src="CHintWnd.js?verson=1.422221"></script>
-    <script type="text/javascript" src="CTimerWnd.js?verson=1.422221"></script>
-    <script type="text/javascript" src="CDragGame.js?verson=1.422221"></script>
+    <script type="text/javascript" src="./Lib/PageDraw.js?verson=1.57"></script>
+    <script type="text/javascript" src="./Lib/CMoveImg.js?verson=1.542222"></script>
+    <script type="text/javascript" src="./Lib/CBtn.js?verson=1.542222"></script>
+    <script type="text/javascript" src="CBtnWnd.js?verson=1.542211"></script>
+    <script type="text/javascript" src="CQuizWnd.js?verson=1.5422221"></script>
+    <script type="text/javascript" src="CHintWnd.js?verson=1.5422221"></script>
+    <script type="text/javascript" src="CTimerWnd.js?verson=1.5422221"></script>
+    <script type="text/javascript" src="CDragGame.js?verson=1.54"></script>
 
 
     <script type="text/javascript">
@@ -257,7 +263,7 @@
                   g_pageQuiz.SetSys(g_Sys);
                   g_pageHint.SetSys(g_Sys);
                   g_pageBtn.SetSys(g_Sys);
-                  g_Sys.SetRun(g_Sys.e_modeQuiz);
+                   g_Sys.SetRun(g_Sys.e_modeQuiz);
                    // g_Sys.SetRun(g_Sys.e_modeDragGame);
                    // g_pageDragGame.SetQuiz(g_Sys.m_arstQuizHistory);
                   g_pageBtn.RestoreBtn(false,true);
@@ -373,6 +379,11 @@
             }
 
             g_pageBtn.m_hwnd.onmousedown = function(st_event){
+              if (g_pageTimer.IsCanNextQuiz()){
+                g_pageTimer.GoNextQuiz();
+                return;
+              }
+
               let iIndex = g_pageBtn.OnMouseDown(st_event);
               if ( iIndex > 0){
                 g_Sys.m_Select = iIndex;

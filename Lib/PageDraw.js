@@ -148,6 +148,25 @@ CPage.prototype.SetShow = function(is_Show){
       this.m_isShow = is_Show;
   }
 }
+
+CPage.prototype.m_isTouch = false;
+CPage.prototype.IsTouch = function(){
+  return this.m_isTouch;
+}
+
+CPage.prototype.GetPosFromEvent = function(st_Event){
+  let posRet = new CPoint();
+  if (this.IsTouch()){
+    st_Event.preventDefault();
+    let e = st_Event.touches[0];
+    // posRet.SetXY(e.clientX,e.clientY);
+    posRet.SetXY(e.pageX-this.m_rcCanvas.left,e.pageY-this.m_rcCanvas.top);
+  }else{
+    posRet.SetXY(st_Event.offsetX,st_Event.offsetY);
+  }
+  return posRet;
+}
+
 CPage.prototype.m_isEnable = true;
 CPage.prototype.IsEnable = function(){return (this.is_Enable !== false);}
 CPage.prototype.SetEnable = function(is_Enable){
@@ -156,6 +175,7 @@ CPage.prototype.SetEnable = function(is_Enable){
 CPage.prototype.IsCanCtrl = function(){
   return (this.IsEnable() && this.IsShow());
 }
+CPage.prototype.m_rcCanvas = null;
 CPage.prototype.m_tCur = 0;
 CPage.prototype.m_tSet = 0;
 CPage.prototype.m_isNeedDraw = true;
@@ -167,9 +187,19 @@ CPage.prototype.IsCanDraw = function(){
 CPage.prototype.InitCPage = function(sz_Canvas,sz_Div){
   this.m_szDiv = typeof sz_Div !== 'undefined' ? sz_Div : '';
   this.m_hwnd = document.getElementById(sz_Canvas);
+  this.m_rcCanvas = this.m_hwnd.getBoundingClientRect();
+  console.log(this.m_rcCanvas);
   this.m_dc = this.m_hwnd.getContext("2d");
   this.m_cx = this.m_hwnd.width;
   this.m_cy = this.m_hwnd.height;
+  let filter = "win16|win32|win64|mac|macintel";
+  if ( navigator.platform )
+  {
+    this.m_isTouch = filter.indexOf( navigator.platform.toLowerCase() ) < 0;
+  }
+  // this.m_isTouch = ('createTouch' in document) || ('onstarttouch' in window);
+  // this.m_isTouch = true;
+
 }
 
  CPage.prototype.DrawFillBox = function( x,y,cx,cy,sz_RGB){
