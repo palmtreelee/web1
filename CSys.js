@@ -28,11 +28,14 @@ CSys.prototype.e_msgTimeOver = 11;
 CSys.prototype.e_msgNextQuiz = 12;
 CSys.prototype.e_msgVoiceRetryEnd = 13;
 CSys.prototype.e_msgGameOver = 14;
+CSys.prototype.e_msgStartDragGame = 15;
+CSys.prototype.e_msgEndDragGame = 16;
 
 CSys.prototype.e_modeNone = 0;
 CSys.prototype.e_modeTitle = 1;
 CSys.prototype.e_modeQuiz = 2;
 CSys.prototype.e_modeCheckSelect = 3;
+CSys.prototype.e_modeDragGame = 4;
 
 CSys.prototype.e_Level1 = 1;
 CSys.prototype.e_Level2 = 2;
@@ -45,6 +48,7 @@ CSys.prototype.m_Select = 0;
 CSys.prototype.m_arstQuiz = [];
 CSys.prototype.m_arstQuizFail = [];
 CSys.prototype.m_arstQuizSuccess = [];
+CSys.prototype.m_arstQuizHistory = [];
 CSys.prototype.m_isLoadImage = false;
 CSys.prototype.m_eLevel = 300;
 CSys.prototype.m_BtnIdLevel = 0;
@@ -53,6 +57,7 @@ CSys.prototype.IsModeNone = function(){return (this.e_modeNone===this.m_eMode);}
 CSys.prototype.IsModeTitle = function(){return (this.e_modeTitle===this.m_eMode);}
 CSys.prototype.IsModeQuiz = function(){return (this.e_modeQuiz===this.m_eMode);}
 CSys.prototype.IsModeCheckSelect = function(){return (this.e_modeCheckSelect===this.m_eMode);}
+CSys.prototype.IsModeDragGame = function(){return (this.e_modeDragGame===this.m_eMode);}
 CSys.prototype.m_arszNumber = ['영','일','이','삼','사','오','육','칠','팔','구','십'];
 CSys.prototype.m_arszJosaUl   = ['을','을','를','을','를','를','을','을','을','를','을'];
 CSys.prototype.m_arszJosaUn   = ['은','은','는','은','는','는','은','은','은','는','은'];
@@ -83,6 +88,7 @@ CSys.prototype.ReTryQuiz = function(){
   this.m_arstQuiz = this.m_arstQuizFail.slice();
   this.m_arstQuizFail = [];
   this.m_arstQuizSuccess = [];
+  this.m_arstQuizHistory = [];
 }
 
 CSys.prototype.IsTimeOver = function(){return (0 === this.m_Select);}
@@ -100,6 +106,17 @@ CSys.prototype.IsLevel1 = function(){
 }
 CSys.prototype.IsLevel2 = function(){return (this.e_Level2 === this.m_eLevel);}
 CSys.prototype.IsLevel3 = function(){return (this.e_Level3 === this.m_eLevel);}
+
+CSys.prototype.IsCanDragGame = function(){
+  if (this.m_arstQuiz.length <= 0){
+    return (this.m_arstQuizHistory.length >= 1);
+  }else{
+    return ((this.IsLevel1() && this.m_arstQuizHistory.length >= 3) ||
+        (this.IsLevel2() && this.m_arstQuizHistory.length >= 4) ||
+        (this.IsLevel3() && this.m_arstQuizHistory.length >= 5)
+      );
+  }
+}
 
 CSys.prototype.GetTimeQuizLimit = function(){
   if (this.IsLevel1()){
@@ -128,7 +145,6 @@ CSys.prototype.CreateQuizMinus = function(){
     }
     i ++
   }
-  console.log(this.m_arstQuiz);
 
   if (false==this.IsLevel1()){
     let stItem = new CItemQuiz();
@@ -144,8 +160,7 @@ CSys.prototype.CreateQuizMinus = function(){
 
   this.m_first = this.m_arstQuiz[0].m_iFirst;
   this.m_Second = this.m_arstQuiz[0].m_iSecond;
-  this.m_arstQuiz.splice(0,1);
-
+  this.m_arstQuizHistory.push(this.m_arstQuiz.shift());
 }
 
 CSys.prototype.GetStrNumber = function(i_Num, sz_Josa){

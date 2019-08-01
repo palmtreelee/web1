@@ -8,9 +8,6 @@ CHintWnd.prototype.m_Second = 1;
 CHintWnd.prototype.m_CntFirst = 2;
 CHintWnd.prototype.m_CntSecond = 1;
 CHintWnd.prototype.m_Select = 0;
-CHintWnd.prototype.m_tSet = 0;
-CHintWnd.prototype.m_tCur = 0;
-CHintWnd.prototype.m_isNeedDraw = false;
 CHintWnd.prototype.m_arstAniCheckSelect = [];
 CHintWnd.prototype.m_isSetHit = false;
 CHintWnd.prototype.m_posHit = new CPoint();
@@ -20,7 +17,7 @@ CHintWnd.prototype.m_fAlphaFirstHide = 0;
 CHintWnd.prototype.OnTimerEx = function(t_Cur)
 {
   this.m_tCur = typeof t_Cur !== 'undefined' ? t_Cur : new Date().getTime();
-  if (this.m_isNeedDraw){
+  if (this.IsCanDraw()){
     this.Draw();
   }
 }
@@ -231,7 +228,7 @@ CHintWnd.prototype.AniCheckSelect = function (is_Start){
                   snd = g_Sys.IsHitSucces() ? g_sndSucces : g_sndFail;
                 }
                 snd.Play(0.4);
-                console.log(snd);
+                // console.log(snd);
               }
 
 
@@ -255,7 +252,7 @@ CHintWnd.prototype.AniCheckSelect = function (is_Start){
         this.m_isSetHit = true;
         this.m_isNeedTTS = true;
         g_Sys.m_arstMsgQ.push(new CMsg(g_Sys.e_msgSetHitStart));
-        console.log('Ani End');
+        // console.log('Ani End');
     }
 
     // console.log(this.m_arstAniCheckSelect.length);
@@ -264,8 +261,8 @@ CHintWnd.prototype.AniCheckSelect = function (is_Start){
 
 CHintWnd.prototype.m_posCntFirst = new CPoint();
 CHintWnd.prototype.m_arstBtn;
-CHintWnd.prototype.Init = function(sz_CanvasID){
-  this.InitCPage(sz_CanvasID);
+CHintWnd.prototype.Init = function(sz_CanvasID,sz_Div){
+  this.InitCPage(sz_CanvasID,sz_Div);
 
   this.m_arstBtn = new Array();
 
@@ -353,7 +350,7 @@ CHintWnd.prototype.OnMouseDown = function(st_Event)
       iRetID = stBtn.m_ID;
       this.m_iBtnID = iRetID;
       g_Sys.m_BtnIdLevel = iRetID;
-      console.log(g_Sys.m_BtnIdLevel,iRetID);
+      // console.log(g_Sys.m_BtnIdLevel,iRetID);
       break;
     }
   }

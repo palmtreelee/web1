@@ -5,10 +5,7 @@ CQuizWnd.prototype = new CPage();
 CQuizWnd.prototype.m_First = 2;
 CQuizWnd.prototype.m_Second = 1;
 CQuizWnd.prototype.m_Select = 0;
-CQuizWnd.prototype.m_tSet = 0;
-CQuizWnd.prototype.m_tCur = 0;
 CQuizWnd.prototype.m_isTTS = false;
-CQuizWnd.prototype.m_isNeedDraw = false;
 CQuizWnd.prototype.m_arstAniCheckSelect= [];
 CQuizWnd.prototype.m_posFirst = new CPoint();
 CQuizWnd.prototype.m_posResult = new CPoint();
@@ -20,7 +17,7 @@ CQuizWnd.prototype.m_szFontNumber = '';
 CQuizWnd.prototype.OnTimerEx = function(t_Cur)
 {
   this.m_tCur = typeof t_Cur !== 'undefined' ? t_Cur : new Date().getTime();
-  if (this.m_isNeedDraw){
+  if (this.IsCanDraw()){
     this.Draw();
   }
 }
@@ -127,11 +124,20 @@ CQuizWnd.prototype.Draw = function (){
   this.m_isNeedDraw = false;
   let cy = Math.floor(this.m_cy * 0.7);
   let y = this.m_cy / 2;
-  if (g_Sys.IsModeTitle()){
+  if (g_Sys.IsModeTitle())
+  {
     this.DrawFillBox(0,0,this.m_cx,this.m_cy,'RGB(255,255,255)');
     this.SetCenterV(true);
     this.DrawText(this.m_cx / 2,y,'동헌이의 뺄샘교실',Math.floor(this.m_cy * 0.4) + 'px arial','center','RGB(0,0,0)');
-  }else{
+  }
+  else if (g_Sys.IsModeDragGame())
+  {
+    this.DrawFillBox(0,0,this.m_cx,this.m_cy,'RGB(255,255,255)');
+    this.SetCenterV(true);
+    this.DrawText(this.m_cx / 2,y,'문제를 끌어다가 답과 연결해요!',Math.floor(this.m_cy * 0.25) + 'px arial','center','RGB(0,0,0)');
+  }
+  else
+  {
     let cx=this.m_cx/5;
     let x = cx / 2;
     let szAlign = 'center';

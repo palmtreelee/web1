@@ -8,10 +8,6 @@ CBtnWnd.prototype.m_btnReTry = null;
 CBtnWnd.prototype.m_First = 2;
 CBtnWnd.prototype.m_Second = 1;
 CBtnWnd.prototype.m_Select = 0;
-CBtnWnd.prototype.m_tSet = 0;
-CBtnWnd.prototype.m_tCur = 0;
-CBtnWnd.prototype.m_isWantInput = false;
-CBtnWnd.prototype.m_isNeedDraw = false;
 CBtnWnd.prototype.m_iResult = 0;
 CBtnWnd.prototype.m_isSetHit = false;
 CBtnWnd.prototype.m_isDrawScore = false;
@@ -35,7 +31,7 @@ CBtnWnd.prototype.SetResult = function(i_Result){
 CBtnWnd.prototype.OnTimerEx = function(t_Cur)
 {
   this.m_tCur = typeof t_Cur !== 'undefined' ? t_Cur : new Date().getTime();
-  if (this.m_isNeedDraw){
+  if (this.IsCanDraw()){
     this.Draw();
   }
 }
@@ -70,8 +66,8 @@ CBtnWnd.prototype.AniCheckSelect = function (is_Start){
 
 CBtnWnd.prototype.m_arposScore = [];
 CBtnWnd.prototype.m_sizScore = new CSize();
-CBtnWnd.prototype.Init = function(sz_CanvasID){
-  this.InitCPage(sz_CanvasID);
+CBtnWnd.prototype.Init = function(sz_CanvasID,sz_Div){
+  this.InitCPage(sz_CanvasID,sz_Div);
   let e_CntLine = 5;
   let e_Gap = 4;
 
@@ -267,7 +263,7 @@ CBtnWnd.prototype.SpeakCheck = function (i_Select){
 }
 
 CBtnWnd.prototype.StopInput = function(i_Index){
-  this.m_isWantInput=false;
+  this.SetEnable(false);
   g_sndClockTick.Stop();
   this.SpeakCheck(i_Index);
 }
@@ -286,7 +282,7 @@ CBtnWnd.prototype.OnMouseDown = function(st_Event)
       return 0;
     }
   }else if (g_Sys.IsModeQuiz()){
-    if (this.m_isWantInput){
+    if (this.IsEnable()){
       let index=1;
       for (var key in this.m_arstBtn){
         if (true === this.m_arstBtn[key].OnL_Down(st_Event.offsetX,st_Event.offsetY)){

@@ -42,6 +42,27 @@ CSprite.prototype.GetCyFrame =function(i_Frame){
   }
 }
 
+CSprite.prototype.GetSizFromFrame = function(i_Frame){
+  if (typeof i_Frame === 'undefined' || i_Frame < 0 || i_Frame >= this.m_arstFrame.length){
+    return new CSize(1,1);
+  }else{
+    let stFrame = this.m_arstFrame[i_Frame];
+    return new CSize(stFrame.cxDest,stFrame.cyDest);
+  }
+}
+
+CSprite.prototype.AddFrame = function(cxDest,cyDest,x,y,cx,cy)
+{
+  x = typeof x !== 'undefined' ? x : 0;
+  y = typeof y !== 'undefined' ? y : 0;
+  cx = typeof cx !== 'undefined' ? cx : this.m_cxSrc;
+  cy = typeof cy !== 'undefined' ? cy : this.m_cySrc;
+  cxDest = typeof cxDest !== 'undefined' ? cxDest : this.m_cxSrc;
+  cyDest = typeof cyDest !== 'undefined' ? cyDest : this.m_cySrc;
+
+  this.m_arstFrame.push(new CFrame(x,y,cx,cy,cxDest,cyDest));
+}
+
 CSprite.prototype.ReLoadSize = function(){
   if (this.m_isLoad && this.m_arstFrame.length > 0 && this.m_cxSrc <= 0){
     console.log('cx :' + this.m_Img.naturalWidth + ',cy :' + this.m_Img.naturalHeight);
@@ -53,8 +74,8 @@ CSprite.prototype.ReLoadSize = function(){
     if (0 === this.m_cy)
         this.m_cy = this.m_cySrc;
 
-    this.m_arstFrame[0].cx = this.m_cxSrc-1;
-    this.m_arstFrame[0].cy = this.m_cySrc-1;
+    this.m_arstFrame[0].cx = this.m_cxSrc;
+    this.m_arstFrame[0].cy = this.m_cySrc;
     console.log(this);
   }
 }

@@ -46,6 +46,7 @@ CMoveImg.prototype.isDrawOverEnd = true;
 CMoveImg.prototype.isComplete = false;
 
 CMoveImg.prototype.isDelete = false;
+CMoveImg.prototype.isOneDraw = false;
 
 CMoveImg.prototype.SetPos = function(sx,sy,ex,ey,t_Cur,t_Limit,t_Delay,f_Accel){
   this.fAccel = typeof f_Accel !== 'undefined' ? f_Accel : 1;
@@ -86,11 +87,15 @@ CMoveImg.prototype.SetPos = function(sx,sy,ex,ey,t_Cur,t_Limit,t_Delay,f_Accel){
 CMoveImg.prototype.SetAlpha = function(f_Start,f_End){
   this.fAlphaS = f_Start;
   this.fAlphaE = f_End;
+
+  this.fAlphaCur = f_Start;
 }
 
 CMoveImg.prototype.SetZoom = function(f_Start,f_End){
   this.fZoomS = f_Start;
   this.fZoomE = f_End;
+
+  this.fZoomCur = f_Start;
 }
 
 CMoveImg.prototype.SetSprite = function(st_Sprite,i_IndexFrame,is_DrawScene){
@@ -204,6 +209,11 @@ CMoveImg.prototype.DrawRetIsEndDraw = function(st_Page,t_Now){
 
 		this.CurY += iAddY;
 	}
+
+  if (this.isOneDraw){
+    this.isOneDraw = false;
+    this.m_isNeedDraw = true;
+  }
 
 	if (null === st_Page || null==this.stSpr || this.fAlphaCur <= 0)
 		return isRet;

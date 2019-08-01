@@ -3,10 +3,7 @@ function CTimerWnd(){
 }
 
 CTimerWnd.prototype = new CPage();
-CTimerWnd.prototype.m_tSet = 0;
-CTimerWnd.prototype.m_tCur = 0;
 CTimerWnd.prototype.m_tLimit = 10000;
-CTimerWnd.prototype.m_isNeedDraw = true;
 CTimerWnd.prototype.m_sizBar = new CSize();
 CTimerWnd.prototype.m_sizClock = new CSize();
 CTimerWnd.prototype.m_posBar = new CPoint();
@@ -16,10 +13,8 @@ CTimerWnd.prototype.m_btnWantNextQuiz = null;
 
 CTimerWnd.prototype.e_btnWantNextQuiz =1;
 
-
-
-CTimerWnd.prototype.Init = function(sz_CanvasID){
-  this.InitCPage(sz_CanvasID);
+CTimerWnd.prototype.Init = function(sz_CanvasID,sz_Div){
+  this.InitCPage(sz_CanvasID,sz_Div);
 
   let cy = Math.floor(this.m_cy / 2);
   let width = this.m_cx - cy * 2;
@@ -69,7 +64,7 @@ CTimerWnd.prototype.SetWantNextQuiz = function(){
 CTimerWnd.prototype.OnTimerEx = function(t_Cur)
 {
   this.m_tCur = typeof t_Cur !== 'undefined' ? t_Cur : new Date().getTime();
-  if (this.m_isNeedDraw){
+  if (this.IsCanDraw()){
     this.Draw();
   }
 }
@@ -83,7 +78,7 @@ CTimerWnd.prototype.SetBar = function(){
 }
 
 CTimerWnd.prototype.SetTimer = function(t_Limit,is_NeedDraw){
-  console.log(t_Limit);
+  // console.log(t_Limit);
   this.m_tLimit = typeof t_Limit !== 'undefined' ? t_Limit : 10000;
   this.m_isNeedDraw = typeof is_NeedDraw !== 'undefined' ? is_NeedDraw : true;
   this.m_tSet = new Date().getTime();

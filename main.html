@@ -13,9 +13,9 @@
     <style media="screen">
       p{ font-size: 20px;}
     </style>
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script type="text/javascript">
-      function InitCanvas(i_Width){
+      function g_InitCanvas(i_Width){
         console.log('Window Cx: ' + window.innerWidth + ',Window Cy: ' + window.innerHeight);
 
         if (i_Width > window.innerWidth)
@@ -26,28 +26,48 @@
         arstPos.push({m_szIdCanvas : 'cvsTimer', m_cx : i_Width, m_cy : Math.floor(i_Width / 10)});
         arstPos.push({m_szIdCanvas : 'cvsHint', m_cx : i_Width, m_cy : Math.floor(i_Width / 10 * 6)});
         arstPos.push({m_szIdCanvas : 'cvsBtn', m_cx : i_Width, m_cy : Math.floor(i_Width / 5 * 4 +2) });
+        arstPos.push({m_szIdCanvas : 'cvsDragGame', m_cx : i_Width, m_cy : arstPos[2].m_cy + arstPos[3].m_cy});
 
         let x = 0;
         let y = 0;
+        let iDragGameX = 0;
+        let iDragGamey = 0;
         let szDiv='<div class="" style="position:absolute; top:';//0px; z-index:1">'
         let szCanvas='<canvas id="';//
+
+        let arszIdDiv = ['temp','divIdQuiz','divIdTimer','divIdHint','divIdBtn','divIdDragGame'];
 
         let i = 1;
         for (let key in arstPos){
           let stPos=arstPos[key];
-          let szTag=szDiv+y+'px; left:' + x + 'px; z-index:'+ i + '">\r\n';
+          let iPutX= x;
+          let iPutY= y;
+
+          if ('cvsHint' === stPos.m_szIdCanvas){
+            x2 = x;
+            y2 = y;
+          }
+
+          if ('cvsDragGame' === stPos.m_szIdCanvas){
+            iPutX = x2;
+            iPutY = y2;
+          }else{
+            y = y+stPos.m_cy;
+          }
+
+          let szTag=szDiv + iPutY + 'px; left:' + iPutX + 'px; z-index:'+ i + '" id="' + arszIdDiv[i] + '">\r\n';
           szTag=szTag + szCanvas + stPos.m_szIdCanvas + '" width="' + stPos.m_cx + '" height="' + stPos.m_cy + '"></canvas>\r\n';
           szTag=szTag + '</div>\r\n';
 
+          // console.log(szTag);
           document.write(szTag);
 
           i = i+1;
-          y = y+stPos.m_cy;
-        }
 
+        }
       }
 
-      InitCanvas(387);
+      g_InitCanvas(387);
     </script>
 
   </head>
@@ -64,6 +84,8 @@
       <img id="id_sprQuizNo" src="Img/QuizNo.png" alt="" width="100px" height="100px">
       <img id="id_sprTimeOver" src="Img/timeover.png" alt="" width="100px" height="100px">
       <img id="id_sprColck" src="Img/Clock.png" alt="" width="100px" height="100px">
+      <img id="id_sprRedX" src="Img/RedX.png" alt="" width="100px" height="100px">
+      <img id="id_sprJudgment" src="Img/Judgment.png" alt="" width="100px" height="100px">
       <audio preload="auto">
         <source  src="Snd/Fire.MP3" type = "">
       </audio>
@@ -88,20 +110,37 @@
       <audio preload="auto">
         <source  src="Snd/BtnClick.wav" type = "">
       </audio>
+      <audio preload="auto">
+        <source  src="Snd/DingDongDengDong.wav" type = "">
+      </audio>
+      <audio preload="auto">
+        <source  src="Snd/DragGameComplete.wav" type = "">
+      </audio>
     </div>
 
     <script src='https://code.responsivevoice.org/responsivevoice.js'></script>
-    <script type="text/javascript" src="CSys.js?verson=1.1612"></script>
-    <script type="text/javascript" src="./Lib/CSound.js?verson=1.2422"></script>
-    <script type="text/javascript" src="./Lib/CSprite.js?verson=1.2422"></script>
+    <script type="text/javascript" src="CSys.js?verson=1.12"></script>
+    <script type="text/javascript" src="./Lib/CSound.js?verson=1.42422"></script>
+    <script type="text/javascript" src="./Lib/CSprite.js?verson=1.42422"></script>
     <script type="text/javascript">
       var g_Sys = new CSys();
-      var g_sprRobot = new CSprite();
-      var g_sprBomb = new CSprite();
-      var g_sprQuizOk = new CSprite();
-      var g_sprQuizNo = new CSprite();
-      var g_sprTimeOver = new CSprite();
-      var g_sprClock = new CSprite();
+      var g_arSprite = new Array();
+      g_arSprite.push(new CSprite());
+      var g_sprRobot = g_arSprite[g_arSprite.length -1];
+      g_arSprite.push(new CSprite());
+      var g_sprBomb = g_arSprite[g_arSprite.length -1];
+      g_arSprite.push(new CSprite());
+      var g_sprQuizOk = g_arSprite[g_arSprite.length -1];
+      g_arSprite.push(new CSprite());
+      var g_sprQuizNo = g_arSprite[g_arSprite.length -1];
+      g_arSprite.push(new CSprite());
+      var g_sprTimeOver = g_arSprite[g_arSprite.length -1];
+      g_arSprite.push(new CSprite());
+      var g_sprClock = g_arSprite[g_arSprite.length -1];
+      g_arSprite.push(new CSprite());
+      var g_sprRedX = g_arSprite[g_arSprite.length -1];
+      g_arSprite.push(new CSprite());
+      var g_sprJudgment = g_arSprite[g_arSprite.length -1];
 
       var g_sndFire = new CSound();
       var g_sndDie = new CSound();
@@ -111,17 +150,22 @@
       var g_sndTimeOverFail = new CSound();
       var g_sndClockTick = new CSound();
       var g_sndBtnClick = new CSound();
+      var g_sndDDDD = new CSound();
+      var g_sndDragGameComplete = new CSound();
 
       // var g_sprTest=new Image();
       // g_sprTest.src='./Img/robot.png';
       window.onload = function(){
         console.log('Window Load');
+
          g_sprRobot.Load('Img/robot.png');
          g_sprBomb.Load('Img/Bomb1.png');
          g_sprQuizOk.Load('Img/QuizOk.png');
-        g_sprQuizNo.Load('Img/QuizNo.png');
-        g_sprTimeOver.Load('Img/timeover.png');
-        g_sprClock.Load('Img/Clock.png');
+          g_sprQuizNo.Load('Img/QuizNo.png');
+          g_sprTimeOver.Load('Img/timeover.png');
+          g_sprClock.Load('Img/Clock.png');
+          g_sprRedX.Load('Img/RedX.png');
+          g_sprJudgment.Load('Img/Judgment.png');
          // g_sprRobot.LoadFromID('id_sprRobot');
          // g_sprBomb.LoadFromID('id_sprBomb');
         g_sndFire.Load("Snd/Fire.MP3");
@@ -132,17 +176,20 @@
         g_sndTimeOverFail.Load("Snd/TimeOverFail.MP3");
         g_sndClockTick.Load("Snd/ClockTicking.wav");
         g_sndBtnClick.Load("Snd/BtnClick.wav");
+        g_sndDDDD.Load("Snd/DingDongDengDong.wav");
+        g_sndDragGameComplete.Load("Snd/DragGameComplete.wav");
 
       }
     </script>
 
-    <script type="text/javascript" src="./Lib/PageDraw.js?verson=1.2413"></script>
-    <script type="text/javascript" src="./Lib/CMoveImg.js?verson=1.2222"></script>
-    <script type="text/javascript" src="./Lib/CBtn.js?verson=1.2222"></script>
-    <script type="text/javascript" src="CBtnWnd.js?verson=1.2211"></script>
-    <script type="text/javascript" src="CQuizWnd.js?verson=1.22221"></script>
-    <script type="text/javascript" src="CHintWnd.js?verson=1.22221"></script>
-    <script type="text/javascript" src="CTimerWnd.js?verson=1.22221"></script>
+    <script type="text/javascript" src="./Lib/PageDraw.js?verson=1.42413"></script>
+    <script type="text/javascript" src="./Lib/CMoveImg.js?verson=1.42222"></script>
+    <script type="text/javascript" src="./Lib/CBtn.js?verson=1.42222"></script>
+    <script type="text/javascript" src="CBtnWnd.js?verson=1.42211"></script>
+    <script type="text/javascript" src="CQuizWnd.js?verson=1.422221"></script>
+    <script type="text/javascript" src="CHintWnd.js?verson=1.422221"></script>
+    <script type="text/javascript" src="CTimerWnd.js?verson=1.422221"></script>
+    <script type="text/javascript" src="CDragGame.js?verson=1.422221"></script>
 
 
     <script type="text/javascript">
@@ -151,24 +198,41 @@
       var g_pageHint=new CHintWnd();
       var g_pageBtn=new CBtnWnd();
       var g_pageTimer=new CTimerWnd();
-
-
+      var g_pageDragGame=new CDrageGameWnd();
 
       function OnTimerEx(){
         if (g_Sys.IsModeNone()){
-          if (false===g_Sys.m_isLoadImage && g_sprRobot.m_isLoad && g_sprBomb.m_isLoad && g_sprQuizOk.m_isLoad && g_sprQuizNo.m_isLoad && g_sprTimeOver.m_isLoad && g_sprClock.m_isLoad){
+          let isLoad = true;
+          for (let key1 in g_arSprite){
+            if (false === g_arSprite[key1].m_isLoad){
+              isLoad=false;
+              break;
+            }
+          }
+          //if (false===g_Sys.m_isLoadImage && g_sprRobot.m_isLoad && g_sprBomb.m_isLoad && g_sprQuizOk.m_isLoad && g_sprQuizNo.m_isLoad && g_sprTimeOver.m_isLoad && g_sprClock.m_isLoad){
+          if (false===g_Sys.m_isLoadImage && isLoad)
+          {
+            g_arSprite.forEach(function(stSpr){
+                stSpr.ReLoadSize();
+            });
 
-            g_sprRobot.ReLoadSize();
-            g_sprBomb.ReLoadSize();
-            g_sprQuizOk.ReLoadSize();
-            g_sprQuizNo.ReLoadSize();
-            g_sprTimeOver.ReLoadSize();
-            g_sprClock.ReLoadSize();
+            // g_sprRobot.ReLoadSize();
+            // g_sprBomb.ReLoadSize();
+            // g_sprQuizOk.ReLoadSize();
+            // g_sprQuizNo.ReLoadSize();
+            // g_sprTimeOver.ReLoadSize();
+            // g_sprClock.ReLoadSize();
+            // g_sprRedX.ReLoadSize();
+            // g_sprJudgment.ReLoadSize();
 
-            g_pageQuiz.InitCPage('cvsQuiz');
-            g_pageHint.Init('cvsHint');
-            g_pageBtn.Init('cvsBtn');
-            g_pageTimer.Init('cvsTimer');
+            g_pageQuiz.InitCPage('cvsQuiz','divIdQuiz');
+            g_pageHint.Init('cvsHint','divIdHint');
+            g_pageBtn.Init('cvsBtn','divIdBtn');
+            g_pageTimer.Init('cvsTimer','divIdTimer');
+            g_pageDragGame.Init('cvsDragGame','divIdDragGame');
+
+            g_pageBtn.SetShow(false);
+            g_pageDragGame.SetShow(false);
 
             g_Sys.OnTimerEx = function(){
               if (g_Sys.m_arstMsgQ.length > 0){
@@ -178,17 +242,36 @@
                   g_pageTimer.SetBar();
                 }else if (g_Sys.e_msgTitleEnd_wParam1IsBtnID === stMsg.eMsg){
 
+                  g_pageBtn.SetShow(true);
+
                   g_Sys.m_eLevel = stMsg.wParam;
                   g_Sys.CreateQuizMinus();
+                  // if (g_Sys.m_arstQuiz.length > 0)
+                  // {
+                  //     let i;
+                  //     for (i = 0;i < 4;i ++){
+                  //         let stQuiz = g_Sys.m_arstQuiz[i];
+                  //         g_Sys.m_arstQuizHistory.push(new CItemQuiz(stQuiz.m_iFirst,stQuiz.m_iSecond));
+                  //     }
+                  // }
                   g_pageQuiz.SetSys(g_Sys);
                   g_pageHint.SetSys(g_Sys);
                   g_pageBtn.SetSys(g_Sys);
                   g_Sys.SetRun(g_Sys.e_modeQuiz);
+                   // g_Sys.SetRun(g_Sys.e_modeDragGame);
+                   // g_pageDragGame.SetQuiz(g_Sys.m_arstQuizHistory);
                   g_pageBtn.RestoreBtn(false,true);
                 }else if (g_Sys.e_msgTimeOver === stMsg.eMsg){
-                  g_Sys.m_Select = 0;
-                  g_pageTimer.m_isNeedDraw = false;
-                  g_pageBtn.StopInput(g_Sys.m_Select);
+                  if (g_Sys.IsModeDragGame()){
+                    g_Sys.SetRun(g_Sys.e_modeDragGame);
+                    g_pageDragGame.SetQuiz(g_Sys.m_arstQuizHistory);
+                    g_pageBtn.RestoreBtn(false,true);
+                    g_pageTimer.SetTimer(60*1000,true);
+                  }else{
+                    g_Sys.m_Select = 0;
+                    g_pageTimer.m_isNeedDraw = false;
+                    g_pageBtn.StopInput(g_Sys.m_Select);
+                  }
                 }else if (g_Sys.e_msgQuizVoiceEnd === stMsg.eMsg){
                   g_pageBtn.RestoreBtn(true,true);
                   g_pageTimer.SetTimer(g_Sys.GetTimeQuizLimit(),true);
@@ -218,14 +301,25 @@
                   g_pageBtn.SetScore(true);
                 }else if (g_Sys.e_msgGameOver === stMsg.eMsg){
 
+                }else if (g_Sys.e_msgEndDragGame === stMsg.eMsg){
+                    g_Sys.m_arstQuizHistory = [];
+                    g_Sys.m_arstMsgQ.push(new CMsg(g_Sys.e_msgNextQuiz));
                 }else if (g_Sys.e_msgNextQuiz === stMsg.eMsg){
-                  if (g_Sys.m_arstQuiz.length <= 0){
+                  if (g_Sys.IsCanDragGame())
+                  {
+                      g_Sys.SetRun(g_Sys.e_modeDragGame);
+                      g_pageDragGame.SetQuiz(g_Sys.m_arstQuizHistory);
+                      g_pageBtn.RestoreBtn(false,true);
+                      g_pageTimer.SetTimer(60*1000,true);
+                  }
+                  else if (g_Sys.m_arstQuiz.length <= 0){
                     g_pageBtn.SetScore();
                   }else{
                     let stNewQuiz = g_Sys.m_arstQuiz[0];
                     g_Sys.m_Second = stNewQuiz.m_iSecond;
                     g_Sys.m_first = stNewQuiz.m_iFirst;
-                    g_Sys.m_arstQuiz.splice(0,1);
+                    g_Sys.m_arstQuizHistory.push(g_Sys.m_arstQuiz.shift());
+                    // g_Sys.m_arstQuiz.splice(0,1);
 
                     g_Sys.m_Select = 0;
 
@@ -248,16 +342,33 @@
               g_pageBtn.OnTimerEx(tCur);
               g_pageQuiz.OnTimerEx(tCur);
               g_pageTimer.OnTimerEx(tCur);
+              g_pageDragGame.OnTimerEx(tCur);
             }
 
             g_Sys.SetRun = function(e_mode){
-              e_mode = typeof e_mode !== 'undefined' ? e_mode : g_Sys.e_modeQuiz;
-              g_Sys.m_eMode = e_mode;
+              this.m_eMode = typeof e_mode !== 'undefined' ? e_mode : g_Sys.e_modeQuiz;
+
               g_pageQuiz.m_isNeedDraw = true;
               g_pageHint.m_isNeedDraw = true;
               g_pageBtn.m_isNeedDraw = true;
+              g_pageDragGame.m_isNeedDraw = true;
 
-              g_pageBtn.m_isWantInput = g_Sys.IsModeQuiz() ? true : false;
+              if (this.IsModeTitle()){
+                g_pageHint.SetShow(true);
+                g_pageBtn.SetShow(false);
+                g_pageDragGame.SetShow(false);
+              }
+              else if (this.IsModeDragGame()){
+                g_pageHint.SetShow(false);
+                g_pageBtn.SetShow(false);
+                g_pageDragGame.SetShow(true);
+              }else{
+                g_pageHint.SetShow(true);
+                g_pageBtn.SetShow(true);
+                g_pageDragGame.SetShow(false);
+              }
+
+              g_pageBtn.SetEnable(g_Sys.IsModeQuiz());
               g_pageHint.AutoShowBtn();
             }
 
@@ -294,6 +405,12 @@
               }
             }
 
+            // g_pageDragGame.m_hwnd.onmousedown = function(st_event){
+            //   if (g_pageDragGame.OnMouseDown(st_event) !== 0){
+            //
+            //   }
+            // }
+
             g_pageQuiz.SetSys(g_Sys);
             g_pageHint.SetSys(g_Sys);
             g_pageBtn.SetSys(g_Sys);
@@ -308,6 +425,8 @@
         }else if (g_Sys.IsModeTitle()){
           g_Sys.OnTimerEx();
         }else if (g_Sys.IsModeQuiz()){
+          g_Sys.OnTimerEx();
+        }else if (g_Sys.IsModeDragGame()){
           g_Sys.OnTimerEx();
         }else if (g_Sys.IsModeCheckSelect()){
           if (false === g_pageQuiz.m_isAniLock && false === g_pageHint.m_isAniLock && false === g_pageBtn.m_isAniLock){
