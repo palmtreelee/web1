@@ -135,7 +135,7 @@ CSys.prototype.CreateQuizMinus = function(){
   this.m_arstQuizSuccess = [];
 
   let i = 2;
-  while (i < 19){
+  while (i < 4){
     let j = 1;
     while (j < i){
       if ((i - j) <= 10 && j <= 10){

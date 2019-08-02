@@ -119,9 +119,9 @@
     </div>
 
     <script src='https://code.responsivevoice.org/responsivevoice.js'></script>
-    <script type="text/javascript" src="CSys.js?verson=1.512"></script>
-    <script type="text/javascript" src="./Lib/CSound.js?verson=1.542422"></script>
-    <script type="text/javascript" src="./Lib/CSprite.js?verson=1.542422"></script>
+    <script type="text/javascript" src="CSys.js?verson=1.412"></script>
+    <script type="text/javascript" src="./Lib/CSound.js?verson=1.442422"></script>
+    <script type="text/javascript" src="./Lib/CSprite.js?verson=1.442422"></script>
     <script type="text/javascript">
       var g_Sys = new CSys();
       var g_arSprite = new Array();
@@ -188,14 +188,14 @@
       }
     </script>
 
-    <script type="text/javascript" src="./Lib/PageDraw.js?verson=1.57"></script>
-    <script type="text/javascript" src="./Lib/CMoveImg.js?verson=1.542222"></script>
-    <script type="text/javascript" src="./Lib/CBtn.js?verson=1.542222"></script>
-    <script type="text/javascript" src="CBtnWnd.js?verson=1.542211"></script>
-    <script type="text/javascript" src="CQuizWnd.js?verson=1.5422221"></script>
-    <script type="text/javascript" src="CHintWnd.js?verson=1.5422221"></script>
-    <script type="text/javascript" src="CTimerWnd.js?verson=1.5422221"></script>
-    <script type="text/javascript" src="CDragGame.js?verson=1.54"></script>
+    <script type="text/javascript" src="./Lib/PageDraw.js?verson=1.47"></script>
+    <script type="text/javascript" src="./Lib/CMoveImg.js?verson=1.442222"></script>
+    <script type="text/javascript" src="./Lib/CBtn.js?verson=1.442222"></script>
+    <script type="text/javascript" src="CBtnWnd.js?verson=1.442211"></script>
+    <script type="text/javascript" src="CQuizWnd.js?verson=1.4422221"></script>
+    <script type="text/javascript" src="CHintWnd.js?verson=1.4422221"></script>
+    <script type="text/javascript" src="CTimerWnd.js?verson=1.4422221"></script>
+    <script type="text/javascript" src="CDragGame.js?verson=1.44"></script>
 
 
     <script type="text/javascript">
@@ -319,7 +319,9 @@
                       g_pageTimer.SetTimer(60*1000,true);
                   }
                   else if (g_Sys.m_arstQuiz.length <= 0){
+                    g_Sys.SetRun(g_Sys.e_modeQuiz);
                     g_pageBtn.SetScore();
+                    g_pageTimer.SetTimer(0,true);
                   }else{
                     let stNewQuiz = g_Sys.m_arstQuiz[0];
                     g_Sys.m_Second = stNewQuiz.m_iSecond;
