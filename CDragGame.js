@@ -8,6 +8,7 @@ CItemQuizDragGame.prototype.m_rc = new CRect();
 CItemQuizDragGame.prototype.m_rcLink = new CRect();
 CItemQuizDragGame.prototype.m_posOffClickBtn = new CPoint();
 CItemQuizDragGame.prototype.m_iIndexLink = -1;
+CItemQuizDragGame.prototype.m_isHaveFail = false;
 CItemQuizDragGame.prototype.ReadItem = function(st_Item){
   this.Read(st_Item);
 }
@@ -31,6 +32,7 @@ CDrageGameWnd.prototype = new CPage();
 CDrageGameWnd.prototype.m_isStartDrag = false;
 CDrageGameWnd.prototype.m_arstQuiz = [];
 CDrageGameWnd.prototype.m_arstResult = [];
+CDrageGameWnd.prototype.m_arstFail = [];
 CDrageGameWnd.prototype.m_arbtnQuiz = [];
 CDrageGameWnd.prototype.m_arbtnResult = [];
 CDrageGameWnd.prototype.m_btnClick = null;
@@ -45,12 +47,14 @@ CAniDrageGameJudgment.prototype = new CMoveImg();
 CAniDrageGameJudgment.prototype.m_isSndFly = false;
 CAniDrageGameJudgment.prototype.m_isSndBomb = false;
 CAniDrageGameJudgment.prototype.m_isOk = false;
+
 CAniDrageGameJudgment.prototype.e_Fly = 1;
 CAniDrageGameJudgment.prototype.e_Hide = 2;
 CAniDrageGameJudgment.prototype.e_CompleteAni = 3;
 CAniDrageGameJudgment.prototype.e_Ani = 4;
 CAniDrageGameJudgment.prototype.e_Show = 5;
 CAniDrageGameJudgment.prototype.e_Complet = 6;
+CAniDrageGameJudgment.prototype.e_Reset = 7;
 
 CAniDrageGameJudgment.prototype.m_eMode = 0;
 
@@ -138,7 +142,13 @@ CDrageGameWnd.prototype.AniJudgment = function (is_Start,is_Ok)
               if (this.m_iCntOk >= this.m_arstQuiz.length)
               {
                 g_sndClockTick.Stop();
-                g_sndDragGameComplete.Play();
+                if (this.m_arstFail.length <= 0){
+                    g_sndDragGameComplete.Play();
+                }else{
+                    responsiveVoice.speak('틀린적 있잖아! 다시해!','Korean Female');
+                }
+
+                let sprEnd = (this.m_arstFail.length <= 0) ? g_sprJudgment : g_sprReset;
 
                 let tAni = 500;
                 this.m_arstJudgment.push(new CAniDrageGameJudgment());
@@ -147,7 +157,7 @@ CDrageGameWnd.prototype.AniJudgment = function (is_Start,is_Ok)
                 let rcPage = new CRect(0,0,this.m_cx,this.m_cy);
                 let rcPut = rcPage.GetCRectFromCSize(siz);
                 stNewAni.SetPos(rcPut.x,rcPut.y,rcPut.x,rcPut.y,this.m_tCur,tAni,0,1);
-                stNewAni.SetSprite(g_sprJudgment,1,false);
+                stNewAni.SetSprite(sprEnd,1,false);
                 stNewAni.SetAlpha(0,1);
                 stNewAni.SetZoom(1,5);
                 stNewAni.m_eMode = stNewAni.e_CompleteAni;
@@ -158,9 +168,9 @@ CDrageGameWnd.prototype.AniJudgment = function (is_Start,is_Ok)
                 this.m_arstJudgment.push(new CAniDrageGameJudgment());
                 stNewAni=this.m_arstJudgment[this.m_arstJudgment.length - 1];
                 stNewAni.SetPos(rcPut.x,rcPut.y,rcPut.x,rcPut.y,this.m_tCur,500,tAni,1);
-                stNewAni.SetSprite(g_sprJudgment,1,false);
+                stNewAni.SetSprite(sprEnd,1,false);
                 stNewAni.SetZoom(5,5);
-                stNewAni.m_eMode = stNewAni.e_Complete;
+                stNewAni.m_eMode = (this.m_arstFail.length <= 0) ? stNewAni.e_Complete : stNewAni.e_Reset;
                 stNewAni.isOneDraw = true;
                 iCntAni ++;
 
@@ -174,6 +184,12 @@ CDrageGameWnd.prototype.AniJudgment = function (is_Start,is_Ok)
           {
             this.SetEnable(false);
             g_Sys.m_arstMsgQ.push(new CMsg(g_Sys.e_msgEndDragGame));
+          }
+          else if (stAni.e_Reset === stAni.m_eMode)
+          {
+            this.SetEnable(true);
+            this.SetQuiz(this.m_arstFail);
+            g_Sys.m_arstMsgQ.push(new CMsg(g_Sys.e_msgResetTimerForDragGame));
           }
 
           this.m_isNeedDraw = true;
@@ -381,6 +397,7 @@ CDrageGameWnd.prototype.SetQuiz = function(arst_Quiz)
         posResult.y += cyGrid;
         posLink.y += cyGrid;
       }
+      this.m_arstFail = [];
       // console.log(this.m_arstQuiz);
       // console.log(this.m_arstResult);
   }
@@ -429,15 +446,19 @@ CDrageGameWnd.prototype.OnMouseUp = function(st_Event){
         let stResult = this.m_arstResult[this.m_iIndexLink];
         let stQuiz = this.m_btnClick.m_stTemp;
         let isOk = stQuiz.GetResult() == stResult.m_iResult;
-        if (isOk){
+        if (isOk)
+        {
           stQuiz.m_iIndexLink = this.m_iIndexLink;
           this.m_btnClick.SetEnable(false);
           this.m_arbtnResult[this.m_iIndexLink].SetEnable(false);
-
-        }else{
-
         }
-
+        else
+        {
+          if (false == stQuiz.m_isHaveFail){
+            stQuiz.m_isHaveFail=true;
+            this.m_arstFail.push(new CItemQuiz(stQuiz.m_iFirst,stQuiz.m_iSecond));
+          }
+        }
         this.AniJudgment(true,isOk);
       }
   }
@@ -471,4 +492,5 @@ CDrageGameWnd.prototype.Init = function(sz_CanvasID,sz_Div){
   this.m_cxUnit = Math.floor(this.m_cx / 6);
   g_sprRedX.AddFrame(this.m_cxUnit,this.m_cxUnit);
   g_sprJudgment.AddFrame(this.m_cxUnit,this.m_cxUnit);
+  g_sprReset.AddFrame(this.m_cxUnit,this.m_cxUnit);
 }

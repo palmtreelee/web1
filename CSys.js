@@ -30,6 +30,7 @@ CSys.prototype.e_msgVoiceRetryEnd = 13;
 CSys.prototype.e_msgGameOver = 14;
 CSys.prototype.e_msgStartDragGame = 15;
 CSys.prototype.e_msgEndDragGame = 16;
+CSys.prototype.e_msgResetTimerForDragGame = 17;
 
 CSys.prototype.e_modeNone = 0;
 CSys.prototype.e_modeTitle = 1;

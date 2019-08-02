@@ -88,6 +88,7 @@
       <img id="id_sprColck" src="Img/Clock.png" alt="" width="100px" height="100px">
       <img id="id_sprRedX" src="Img/RedX.png" alt="" width="100px" height="100px">
       <img id="id_sprJudgment" src="Img/Judgment.png" alt="" width="100px" height="100px">
+      <img id="id_sprReset" src="Img/reset.png" alt="" width="100px" height="100px">
       <audio preload="auto">
         <source  src="Snd/Fire.MP3" type = "">
       </audio>
@@ -143,6 +144,8 @@
       var g_sprRedX = g_arSprite[g_arSprite.length -1];
       g_arSprite.push(new CSprite());
       var g_sprJudgment = g_arSprite[g_arSprite.length -1];
+      g_arSprite.push(new CSprite());
+      var g_sprReset = g_arSprite[g_arSprite.length -1];
 
       var g_sndFire = new CSound();
       var g_sndDie = new CSound();
@@ -168,6 +171,7 @@
           g_sprClock.Load('Img/Clock.png');
           g_sprRedX.Load('Img/RedX.png');
           g_sprJudgment.Load('Img/Judgment.png');
+          g_sprReset.Load('Img/reset.png');
          // g_sprRobot.LoadFromID('id_sprRobot');
          // g_sprBomb.LoadFromID('id_sprBomb');
         g_sndFire.Load("Snd/Fire.MP3");
@@ -313,7 +317,10 @@
                 }else if (g_Sys.e_msgEndDragGame === stMsg.eMsg){
                     g_Sys.m_arstQuizHistory = [];
                     g_Sys.m_arstMsgQ.push(new CMsg(g_Sys.e_msgNextQuiz));
-                }else if (g_Sys.e_msgNextQuiz === stMsg.eMsg){
+                }else if (g_Sys.e_msgResetTimerForDragGame === stMsg.eMsg){
+                    g_pageTimer.SetTimer(60*1000,true);
+                }
+                else if (g_Sys.e_msgNextQuiz === stMsg.eMsg){
                   if (g_Sys.IsCanDragGame())
                   {
                       g_Sys.SetRun(g_Sys.e_modeDragGame);
