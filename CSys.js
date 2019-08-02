@@ -49,6 +49,7 @@ CSys.prototype.m_arstQuiz = [];
 CSys.prototype.m_arstQuizFail = [];
 CSys.prototype.m_arstQuizSuccess = [];
 CSys.prototype.m_arstQuizHistory = [];
+CSys.prototype.m_iCntCurQuiz = 0;
 CSys.prototype.m_isLoadImage = false;
 CSys.prototype.m_eLevel = 300;
 CSys.prototype.m_BtnIdLevel = 0;
@@ -75,8 +76,12 @@ CSys.prototype.GetCntQuizSuccess = function(){
   return this.m_arstQuizSuccess.length;
 }
 
+CSys.prototype.GetCntQuizRemain = function(){
+  return this.m_arstQuiz.length + this.m_iCntCurQuiz;
+}
+
 CSys.prototype.GetCntTotalQuiz = function(){
-  return this.m_arstQuizSuccess.length + this.m_arstQuizFail.length + this.m_arstQuiz.length;
+  return this.m_arstQuizSuccess.length + this.m_arstQuizFail.length + this.m_arstQuiz.length + this.m_iCntCurQuiz;
 }
 
 CSys.prototype.IsCanReTry = function(){
@@ -161,6 +166,7 @@ CSys.prototype.CreateQuizMinus = function(){
   this.m_first = this.m_arstQuiz[0].m_iFirst;
   this.m_Second = this.m_arstQuiz[0].m_iSecond;
   this.m_arstQuizHistory.push(this.m_arstQuiz.shift());
+  this.m_iCntCurQuiz = 1;
 }
 
 CSys.prototype.GetStrNumber = function(i_Num, sz_Josa){

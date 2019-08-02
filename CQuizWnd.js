@@ -13,6 +13,10 @@ CQuizWnd.prototype.m_iResult = 0;
 CQuizWnd.prototype.m_isSetHit = false;
 CQuizWnd.prototype.m_rgbResult = '#CC9933'
 CQuizWnd.prototype.m_szFontNumber = '';
+CQuizWnd.prototype.m_iCntTotalQuiz = 0;
+CQuizWnd.prototype.m_iCntRemainQuiz = 0;
+CQuizWnd.prototype.m_iCntSuccesQuiz = 0;
+CQuizWnd.prototype.m_iCntFailQuiz = 0;
 
 CQuizWnd.prototype.OnTimerEx = function(t_Cur)
 {
@@ -20,6 +24,15 @@ CQuizWnd.prototype.OnTimerEx = function(t_Cur)
   if (this.IsCanDraw()){
     this.Draw();
   }
+}
+
+CQuizWnd.prototype.UpdateCnt =function()
+{
+  this.m_iCntTotalQuiz = g_Sys.GetCntTotalQuiz();
+  this.m_iCntRemainQuiz = g_Sys.GetCntQuizRemain();
+  this.m_iCntSuccesQuiz = g_Sys.GetCntQuizSuccess();
+  this.m_iCntFailQuiz = g_Sys.GetCntQuizFail()
+  this.m_isNeedDraw = true;
 }
 
 CQuizWnd.prototype.SetSys = function(st_Sys)
@@ -122,6 +135,7 @@ CQuizWnd.prototype.OnEndTTSQuiz = function ()
 
 CQuizWnd.prototype.Draw = function (){
   this.m_isNeedDraw = false;
+  let cxUnit = Math.floor(this.m_cx / 10);
   let cy = Math.floor(this.m_cy * 0.7);
   let y = this.m_cy / 2;
   if (g_Sys.IsModeTitle())
@@ -138,13 +152,37 @@ CQuizWnd.prototype.Draw = function (){
   }
   else
   {
+    if (true)
+    {
+      this.DrawOutLineBox(0,0,this.m_cx,this.m_cy,5,"rgb(255,255,255)","rgb(0,0,0)");
+      this.LineV(0,cxUnit,this.m_cx,'RGB(128,128,128)',1);
+      this.SetCenterV(true);
+
+      let cx = Math.floor(this.m_cx / 3);
+      let pos = new CPoint(cx / 2,cxUnit / 2);
+      let szFont = Math.floor(cxUnit * 0.45) + 'px arial';
+      this.DrawText(pos.x,pos.y,'전체문제: '+this.m_iCntRemainQuiz+'/'+this.m_iCntTotalQuiz,
+        szFont,'center','RGB(0,0,0)');
+      pos.x += cx;
+      this.DrawText(pos.x,pos.y,'정답: '+this.m_iCntSuccesQuiz,
+        szFont,'center','RGB(0,0,255)');
+      pos.x += cx;
+      this.DrawText(pos.x,pos.y,'틀린문제: '+this.m_iCntFailQuiz,
+        szFont,'center','RGB(255,0,0)');
+      pos.x += cx;
+    }
+
+    y = cxUnit * 2;
+    cy = cxUnit * 2;
+
     let cx=this.m_cx/5;
     let x = cx / 2;
     let szAlign = 'center';
     this.m_szFontNumber = cy+"px arial";
     this.SetCenterV(true);
 
-    this.DrawOutLineBox(0,0,this.m_cx,this.m_cy,5,"rgb(255,255,255)","rgb(0,0,0)");
+
+
     this.DrawText(x,y,this.m_First,this.m_szFontNumber,szAlign,'RGB(0,0,255)');
     this.m_posFirst.SetXY(x,y);
     x += cx;
@@ -157,8 +195,10 @@ CQuizWnd.prototype.Draw = function (){
     this.m_posResult.SetXY(x,y);
 
     if (0 === this.m_iResult){
-      let gap=Math.floor((this.m_cy - cy)/2);
-      this.DrawLineBox(x+gap-(cx/2),gap,cx-gap-gap,g_pageQuiz.m_cy-gap-gap,5,'RGB(0,0,0)');
+      this.DrawText(x,y,'?',this.m_szFontNumber,szAlign,'RGB(0,0,0)');
+      // let gap = 8;
+      // let rcBox = new CRect(cx* 4 + gap*2,cxUnit+gap,cx - gap * 4, cxUnit*2-gap*2);
+      // this.DrawLineBox(rcBox.x,rcBox.y,rcBox.cx,rcBox.cy,5,'RGB(0,0,0)');
     }
     else {
       this.DrawText(x,y,this.m_iResult,this.m_szFontNumber,szAlign,this.m_rgbResult);

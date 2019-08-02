@@ -21,8 +21,10 @@
         if (i_Width > window.innerWidth)
           i_Width = window.innerWidth;
 
+        let cxUnit = Math.floor(i_Width / 10);
+
         let arstPos = [];
-        arstPos.push({m_szIdCanvas : 'cvsQuiz', m_cx : i_Width, m_cy : 100});
+        arstPos.push({m_szIdCanvas : 'cvsQuiz', m_cx : i_Width, m_cy : cxUnit * 3});
         arstPos.push({m_szIdCanvas : 'cvsTimer', m_cx : i_Width, m_cy : Math.floor(i_Width / 10)});
         arstPos.push({m_szIdCanvas : 'cvsHint', m_cx : i_Width, m_cy : Math.floor(i_Width / 10 * 6)});
         arstPos.push({m_szIdCanvas : 'cvsBtn', m_cx : i_Width, m_cy : Math.floor(i_Width / 5 * 4 +2) });
@@ -300,6 +302,7 @@
                   g_pageQuiz.SetResult(stMsg.wParam);
                   g_pageBtn.SetResult(stMsg.wParam);
                 }else if (g_Sys.e_msgSetHitStart === stMsg.eMsg){
+                  g_pageQuiz.UpdateCnt();
                   g_pageBtn.SetHit();
                 }else if (g_Sys.e_msgSetHitEnd === stMsg.eMsg){
                   g_pageTimer.SetWantNextQuiz();
@@ -327,6 +330,7 @@
                     g_Sys.m_Second = stNewQuiz.m_iSecond;
                     g_Sys.m_first = stNewQuiz.m_iFirst;
                     g_Sys.m_arstQuizHistory.push(g_Sys.m_arstQuiz.shift());
+                    g_Sys.m_iCntCurQuiz = 1;
                     // g_Sys.m_arstQuiz.splice(0,1);
 
                     g_Sys.m_Select = 0;
@@ -374,6 +378,7 @@
                 g_pageHint.SetShow(true);
                 g_pageBtn.SetShow(true);
                 g_pageDragGame.SetShow(false);
+                g_pageQuiz.UpdateCnt();
               }
 
               g_pageBtn.SetEnable(g_Sys.IsModeQuiz());
@@ -394,6 +399,7 @@
                 }else{
                   g_Sys.m_arstQuizFail.push(new CItemQuiz(g_Sys.m_first,g_Sys.m_Second));
                 }
+                g_Sys.m_iCntCurQuiz = 0;
 
                 g_pageTimer.m_isNeedDraw = false;
 
