@@ -261,6 +261,57 @@ CHintWnd.prototype.AniCheckSelect = function (is_Start){
 
 CHintWnd.prototype.m_posCntFirst = new CPoint();
 CHintWnd.prototype.m_arstBtn;
+CHintWnd.prototype.AutoShowBtn = function(){
+  if (g_Sys.IsModeTitle()){
+    this.m_arstBtn.forEach(function(stBtn){
+      stBtn.SetShow(true);
+      stBtn.SetEnable(true);
+      stBtn.RestoreRGB();
+    });
+    this.m_isNeedDraw = true;
+  }else{
+    for (let key in this.m_arstBtn){
+      this.m_arstBtn[key].SetShow(false);
+    }
+    this.m_isNeedDraw = true;
+  }
+}
+
+CHintWnd.prototype.OnEndTTSLevel = function(){
+  // g_Sys.m_arstMsgQ.push(new CMsg(g_Sys.e_msgTitleEnd_wParam1IsBtnID,g_Sys.m_BtnIdLevel));
+  g_Sys.m_arstMsgQ.push(new CMsg(g_Sys.e_msgTitleEnd_wParam1IsBtnID,g_Sys.m_BtnIdLevel));
+}
+
+CHintWnd.prototype.OnMouseDown = function(st_Event)
+{
+  let iRetID = 0;
+  for (let key in this.m_arstBtn)
+  {
+    let stBtn=this.m_arstBtn[key];
+    if(true === stBtn.OnL_Down(st_Event.offsetX,st_Event.offsetY))
+    {
+      iRetID = stBtn.m_ID;
+      this.m_iBtnID = iRetID;
+      g_Sys.m_BtnIdLevel = iRetID;
+      // console.log(g_Sys.m_BtnIdLevel,iRetID);
+      break;
+    }
+  }
+
+  if (iRetID > 0)
+  {
+    this.m_arstBtn.forEach(function(stBtn,index,array){
+      stBtn.SetEnable(false);
+      if (iRetID === stBtn.m_ID){
+        stBtn.m_Rgb.SetDisableFromNormal();
+        responsiveVoice.speak(stBtn.m_szTemp,'Korean Female',{onend : this.OnEndTTSLevel});
+      }
+    },this);
+    this.m_isNeedDraw=true;
+  }
+  g_Sys.m_arstMsgQ.push(new CMsg(g_Sys.e_msgClickHintWnd_wParamIsBtnID,iRetID));
+}
+
 CHintWnd.prototype.Init = function(sz_CanvasID,sz_Div){
   this.InitCPage(sz_CanvasID,sz_Div);
 
@@ -316,57 +367,8 @@ CHintWnd.prototype.Init = function(sz_CanvasID,sz_Div){
   g_sprQuizNo.m_arstFrame.push(new CFrame(0,0,g_sprQuizNo.m_cxSrc,g_sprQuizNo.m_cySrc,size,size));
   g_sprTimeOver.m_arstFrame.push(new CFrame(0,0,g_sprTimeOver.m_cxSrc,g_sprTimeOver.m_cySrc,size,size));
   this.m_posHit.SetXY(size+15,5);
-}
 
-CHintWnd.prototype.AutoShowBtn = function(){
-  if (g_Sys.IsModeTitle()){
-    this.m_arstBtn.forEach(function(stBtn){
-      stBtn.SetShow(true);
-      stBtn.SetEnable(true);
-      stBtn.RestoreRGB();
-    });
-    this.m_isNeedDraw = true;
-  }else{
-    for (let key in this.m_arstBtn){
-      this.m_arstBtn[key].SetShow(false);
-    }
-    this.m_isNeedDraw = true;
-  }
-}
-
-CHintWnd.prototype.OnEndTTSLevel = function(){
-  // g_Sys.m_arstMsgQ.push(new CMsg(g_Sys.e_msgTitleEnd_wParam1IsBtnID,g_Sys.m_BtnIdLevel));
-  g_Sys.m_arstMsgQ.push(new CMsg(g_Sys.e_msgTitleEnd_wParam1IsBtnID,g_Sys.m_BtnIdLevel));
-}
-
-CHintWnd.prototype.OnMouseDown = function(st_Event)
-{
-  let iRetID = 0;
-  for (let key in this.m_arstBtn)
-  {
-    let stBtn=this.m_arstBtn[key];
-    if(true === stBtn.OnL_Down(st_Event.offsetX,st_Event.offsetY))
-    {
-      iRetID = stBtn.m_ID;
-      this.m_iBtnID = iRetID;
-      g_Sys.m_BtnIdLevel = iRetID;
-      // console.log(g_Sys.m_BtnIdLevel,iRetID);
-      break;
-    }
-  }
-
-  if (iRetID > 0)
-  {
-    this.m_arstBtn.forEach(function(stBtn,index,array){
-      stBtn.SetEnable(false);
-      if (iRetID === stBtn.m_ID){
-        stBtn.m_Rgb.SetDisableFromNormal();
-        responsiveVoice.speak(stBtn.m_szTemp,'Korean Female',{onend : this.OnEndTTSLevel});
-      }
-    },this);
-    this.m_isNeedDraw=true;
-  }
-  return iRetID;
+  $(this.m_hwnd).on('mousedown','',this.OnMouseDown.bind(this));
 }
 
 function CPosHintWnd(){

@@ -31,6 +31,9 @@ CSys.prototype.e_msgGameOver = 14;
 CSys.prototype.e_msgStartDragGame = 15;
 CSys.prototype.e_msgEndDragGame = 16;
 CSys.prototype.e_msgResetTimerForDragGame = 17;
+CSys.prototype.e_msgBtnWndClick_wParamIsBtnID = 18;
+CSys.prototype.e_msgClickHintWnd_wParamIsBtnID = 19;
+CSys.prototype.e_msgClickTimerWnd_wParamIsBtnID = 20;
 
 CSys.prototype.e_modeNone = 0;
 CSys.prototype.e_modeTitle = 1;

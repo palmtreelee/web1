@@ -66,53 +66,6 @@ CBtnWnd.prototype.AniCheckSelect = function (is_Start){
 
 CBtnWnd.prototype.m_arposScore = [];
 CBtnWnd.prototype.m_sizScore = new CSize();
-CBtnWnd.prototype.Init = function(sz_CanvasID,sz_Div){
-  this.InitCPage(sz_CanvasID,sz_Div);
-  let e_CntLine = 5;
-  let e_Gap = 4;
-
-  let cx=Math.floor(this.m_cx / e_CntLine);
-  this.m_sizScore.Set(cx * e_CntLine,cx);
-
-  let x = e_Gap;
-  let y = e_Gap;
-  this.m_arposScore.push(new CPoint(x,y));
-  let j = 1;
-  for (i = 1;i < 20;i ++ , j ++){
-    this.m_arstBtn.push(new CBtn());
-    let stBtn = this.m_arstBtn[i-1];
-    stBtn.InitCBtn(String(i),x,y,cx-e_Gap * 2,cx - e_Gap * 2,this,true,true,i);
-    stBtn.m_Rgb.m_szBack = stBtn.GetGradient(200,200,200);
-    stBtn.BackupRGB();
-    stBtn.m_sndClick = g_sndBtnClick;
-
-    if (j >= e_CntLine){
-      j = 0;
-      x = e_Gap;
-      y += cx;
-      this.m_arposScore.push(new CPoint(x,y));
-    }
-    else{
-      x += cx;
-    }
-  }
-
-  let siz = new CSize();
-  siz.Set(Math.floor((cx * e_CntLine) * 0.8),Math.floor(cx * 0.75));
-  let pos = new CPoint();
-  pos.SetXY(siz.GetCenterX(this.m_cx),siz.GetCenterY(cx) + y -e_Gap);
-
-
-  this.m_btnReTry = new CBtn();
-  this.m_btnReTry.InitCBtn('틀린 문제만 재도전!',pos.x,pos.y,siz.cx,siz.cy,this,false,false,this.
-                            m_eBtnReTry,0.55);
-  this.m_btnReTry.m_sndClick = g_sndBtnClick;
-  let stRgb=new CColorBtn();
-  stRgb.Read(this.m_btnReTry.m_Rgb);
-  stRgb.m_szBack = '#940583';
-  stRgb.m_szFont = '#FFFFFF';
-  this.m_btnReTry.SetRGB(stRgb);
-}
 
 CBtnWnd.prototype.OnEndTTSCheckSelect = function(){
   // console.log('OnEndTTSCheckSelect');
@@ -272,27 +225,86 @@ CBtnWnd.prototype.OnMouseDown = function(st_Event)
 {
   if (g_Sys.IsModeTitle()){
 
-  }else if (this.m_isDrawScore){
-    if (true === this.m_btnReTry.OnL_Down(st_Event.offsetX,st_Event.offsetY)){
+  }
+  else if (this.m_isDrawScore)
+  {
+    if (true === this.m_btnReTry.OnL_Down(st_Event.offsetX,st_Event.offsetY))
+    {
       g_Sys.ReTryQuiz();
       g_Sys.m_arstMsgQ.push(new CMsg(g_Sys.e_msgNextQuiz))
       this.m_btnReTry.SetShow(false);
       this.m_isDrawScore = false;
       this.m_isNeedDraw = true;
-      return 0;
     }
-  }else if (g_Sys.IsModeQuiz()){
-    if (this.IsEnable()){
+  }
+  else if (g_Sys.IsModeQuiz())
+  {
+    if (this.IsEnable())
+    {
       let index=1;
-      for (var key in this.m_arstBtn){
-        if (true === this.m_arstBtn[key].OnL_Down(st_Event.offsetX,st_Event.offsetY)){
+      for (var key in this.m_arstBtn)
+      {
+        let stBtn = this.m_arstBtn[key];
+        if (true === stBtn.OnL_Down(st_Event.offsetX,st_Event.offsetY)){
           this.StopInput(index);
-          return index;
+          g_Sys.m_arstMsgQ.push(new CMsg(g_Sys.e_msgBtnWndClick_wParamIsBtnID,stBtn.GetID()));
+          return;
         }
         index ++;
       }
     }
   }
 
-  return 0;
+  g_Sys.m_arstMsgQ.push(new CMsg(g_Sys.e_msgBtnWndClick_wParamIsBtnID,0));
+}
+
+
+CBtnWnd.prototype.Init = function(sz_CanvasID,sz_Div){
+  this.InitCPage(sz_CanvasID,sz_Div);
+  let e_CntLine = 5;
+  let e_Gap = 4;
+
+  let cx=Math.floor(this.m_cx / e_CntLine);
+  this.m_sizScore.Set(cx * e_CntLine,cx);
+
+  let x = e_Gap;
+  let y = e_Gap;
+  this.m_arposScore.push(new CPoint(x,y));
+  let j = 1;
+  for (i = 1;i < 20;i ++ , j ++){
+    this.m_arstBtn.push(new CBtn());
+    let stBtn = this.m_arstBtn[i-1];
+    stBtn.InitCBtn(String(i),x,y,cx-e_Gap * 2,cx - e_Gap * 2,this,true,true,i);
+    stBtn.m_Rgb.m_szBack = stBtn.GetGradient(200,200,200);
+    stBtn.BackupRGB();
+    stBtn.m_sndClick = g_sndBtnClick;
+
+    if (j >= e_CntLine){
+      j = 0;
+      x = e_Gap;
+      y += cx;
+      this.m_arposScore.push(new CPoint(x,y));
+    }
+    else{
+      x += cx;
+    }
+  }
+
+  let siz = new CSize();
+  siz.Set(Math.floor((cx * e_CntLine) * 0.8),Math.floor(cx * 0.75));
+  let pos = new CPoint();
+  pos.SetXY(siz.GetCenterX(this.m_cx),siz.GetCenterY(cx) + y -e_Gap);
+
+
+  this.m_btnReTry = new CBtn();
+  this.m_btnReTry.InitCBtn('틀린 문제만 재도전!',pos.x,pos.y,siz.cx,siz.cy,this,false,false,this.
+                            m_eBtnReTry,0.55);
+  this.m_btnReTry.m_sndClick = g_sndBtnClick;
+  let stRgb=new CColorBtn();
+  stRgb.Read(this.m_btnReTry.m_Rgb);
+  stRgb.m_szBack = '#940583';
+  stRgb.m_szFont = '#FFFFFF';
+  this.m_btnReTry.SetRGB(stRgb);
+
+  $(this.m_hwnd).on('mousedown','',this.OnMouseDown.bind(this));
 }

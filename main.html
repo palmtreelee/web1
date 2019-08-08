@@ -6,8 +6,7 @@
           content="width=device-width,
           user-scalable=yes,
           initial-scale= 1.0,
-          maxium-scale = 3.0
-          ">
+          maxium-scale = 3.0">
     <title>가장 간단한 HTML</title>
 
     <style media="screen">
@@ -122,9 +121,9 @@
     </div>
 
     <script src='https://code.responsivevoice.org/responsivevoice.js'></script>
-    <script type="text/javascript" src="CSys.js?verson=1.42"></script>
-    <script type="text/javascript" src="./Lib/CSound.js?verson=1.342422"></script>
-    <script type="text/javascript" src="./Lib/CSprite.js?verson=1.342422"></script>
+    <script type="text/javascript" src="CSys.js?verson=1.22"></script>
+    <script type="text/javascript" src="./Lib/CSound.js?verson=1.242422"></script>
+    <script type="text/javascript" src="./Lib/CSprite.js?verson=1.242422"></script>
     <script type="text/javascript">
       var g_Sys = new CSys();
       var g_arSprite = new Array();
@@ -194,14 +193,14 @@
       }
     </script>
 
-    <script type="text/javascript" src="./Lib/PageDraw.js?verson=1.37"></script>
-    <script type="text/javascript" src="./Lib/CMoveImg.js?verson=1.342222"></script>
-    <script type="text/javascript" src="./Lib/CBtn.js?verson=1.342222"></script>
-    <script type="text/javascript" src="CBtnWnd.js?verson=1.342211"></script>
-    <script type="text/javascript" src="CQuizWnd.js?verson=1.3422221"></script>
-    <script type="text/javascript" src="CHintWnd.js?verson=1.3422221"></script>
-    <script type="text/javascript" src="CTimerWnd.js?verson=1.3422221"></script>
-    <script type="text/javascript" src="CDragGame.js?verson=1.34"></script>
+    <script type="text/javascript" src="./Lib/PageDraw.js?verson=1.27"></script>
+    <script type="text/javascript" src="./Lib/CMoveImg.js?verson=1.242222"></script>
+    <script type="text/javascript" src="./Lib/CBtn.js?verson=1.242222"></script>
+    <script type="text/javascript" src="CBtnWnd.js?verson=1.242211"></script>
+    <script type="text/javascript" src="CQuizWnd.js?verson=1.2422221"></script>
+    <script type="text/javascript" src="CHintWnd.js?verson=1.2422221"></script>
+    <script type="text/javascript" src="CTimerWnd.js?verson=1.2422221"></script>
+    <script type="text/javascript" src="CDragGame.js?verson=1.24"></script>
 
 
     <script type="text/javascript">
@@ -269,7 +268,7 @@
                   g_pageQuiz.SetSys(g_Sys);
                   g_pageHint.SetSys(g_Sys);
                   g_pageBtn.SetSys(g_Sys);
-                   g_Sys.SetRun(g_Sys.e_modeQuiz);
+                  g_Sys.SetRun(g_Sys.e_modeQuiz);
                    // g_Sys.SetRun(g_Sys.e_modeDragGame);
                    // g_pageDragGame.SetQuiz(g_Sys.m_arstQuizHistory);
                   g_pageBtn.RestoreBtn(false,true);
@@ -295,7 +294,6 @@
                     responsiveVoice.speak(g_Sys.GetStrNumber(g_Sys.m_Select,'라')+'고? 맞는지 확인해볼까?','Korean Female',
                         {onend: g_pageBtn.OnEndTTSCheckSelect});
                   }
-
                 }else if (g_Sys.e_msgSelectVoiceEnd === stMsg.eMsg){
                   g_Sys.m_eMode=g_Sys.e_modeCheckSelect;
 
@@ -319,6 +317,37 @@
                     g_Sys.m_arstMsgQ.push(new CMsg(g_Sys.e_msgNextQuiz));
                 }else if (g_Sys.e_msgResetTimerForDragGame === stMsg.eMsg){
                     g_pageTimer.SetTimer(60*1000,true);
+                }else if (g_Sys.e_msgClickHintWnd_wParamIsBtnID === stMsg.eMsg){ //힌트canvas에 클릭
+                  if (g_pageTimer.IsCanNextQuiz()){
+                    g_pageTimer.GoNextQuiz();
+                  }
+                }else if (g_Sys.e_msgClickTimerWnd_wParamIsBtnID === stMsg.eMsg){ //타이머canvas에 클릭
+                  if (g_pageTimer.IsCanNextQuiz()){
+                    g_pageTimer.GoNextQuiz();
+                  }
+                }else if (g_Sys.e_msgBtnWndClick_wParamIsBtnID === stMsg.eMsg){ //버튼Canvas에서 클릭이 발생
+                  if (g_pageTimer.IsCanNextQuiz())
+                  {
+                    g_pageTimer.GoNextQuiz();
+                  }
+                  else
+                  {
+                    let iIndex = stMsg.wParam;
+                    if ( iIndex > 0)
+                    {
+                      g_Sys.m_Select = iIndex;
+                      if (g_Sys.IsHitSucces())
+                      {
+                        g_Sys.m_arstQuizSuccess.push(new CItemQuiz(g_Sys.m_first,g_Sys.m_Second));
+                      }
+                      else
+                      {
+                        g_Sys.m_arstQuizFail.push(new CItemQuiz(g_Sys.m_first,g_Sys.m_Second));
+                      }
+                      g_Sys.m_iCntCurQuiz = 0;
+                      g_pageTimer.m_isNeedDraw = false;
+                    }
+                  }
                 }
                 else if (g_Sys.e_msgNextQuiz === stMsg.eMsg){
                   if (g_Sys.IsCanDragGame())
@@ -392,44 +421,44 @@
               g_pageHint.AutoShowBtn();
             }
 
-            g_pageBtn.m_hwnd.onmousedown = function(st_event){
-              if (g_pageTimer.IsCanNextQuiz()){
-                g_pageTimer.GoNextQuiz();
-                return;
-              }
+            // g_pageBtn.m_hwnd.onmousedown = function(st_event){
+            //   if (g_pageTimer.IsCanNextQuiz()){
+            //     g_pageTimer.GoNextQuiz();
+            //     return;
+            //   }
+            //
+            //   let iIndex = g_pageBtn.OnMouseDown(st_event);
+            //   if ( iIndex > 0){
+            //     g_Sys.m_Select = iIndex;
+            //     if (g_Sys.IsHitSucces()){
+            //       g_Sys.m_arstQuizSuccess.push(new CItemQuiz(g_Sys.m_first,g_Sys.m_Second));
+            //     }else{
+            //       g_Sys.m_arstQuizFail.push(new CItemQuiz(g_Sys.m_first,g_Sys.m_Second));
+            //     }
+            //     g_Sys.m_iCntCurQuiz = 0;
+            //
+            //     g_pageTimer.m_isNeedDraw = false;
+            //
+            //   }
+            // }
 
-              let iIndex = g_pageBtn.OnMouseDown(st_event);
-              if ( iIndex > 0){
-                g_Sys.m_Select = iIndex;
-                if (g_Sys.IsHitSucces()){
-                  g_Sys.m_arstQuizSuccess.push(new CItemQuiz(g_Sys.m_first,g_Sys.m_Second));
-                }else{
-                  g_Sys.m_arstQuizFail.push(new CItemQuiz(g_Sys.m_first,g_Sys.m_Second));
-                }
-                g_Sys.m_iCntCurQuiz = 0;
+            // g_pageHint.m_hwnd.onmousedown = function(st_event){
+            //   if (g_pageTimer.IsCanNextQuiz()){
+            //     g_pageTimer.GoNextQuiz();
+            //     return;
+            //   }else if (g_pageHint.OnMouseDown(st_event)){
+            //
+            //   }
+            // }
 
-                g_pageTimer.m_isNeedDraw = false;
-
-              }
-            }
-
-            g_pageHint.m_hwnd.onmousedown = function(st_event){
-              if (g_pageTimer.IsCanNextQuiz()){
-                g_pageTimer.GoNextQuiz();
-                return;
-              }else if (g_pageHint.OnMouseDown(st_event)){
-
-              }
-            }
-
-            g_pageTimer.m_hwnd.onmousedown = function(st_event){
-              if (g_pageTimer.IsCanNextQuiz()){
-                g_pageTimer.GoNextQuiz();
-                return;
-              }else if (g_pageTimer.OnMouseDown(st_event)){
-
-              }
-            }
+            // g_pageTimer.m_hwnd.onmousedown = function(st_event){
+            //   if (g_pageTimer.IsCanNextQuiz()){
+            //     g_pageTimer.GoNextQuiz();
+            //     return;
+            //   }else if (g_pageTimer.OnMouseDown(st_event)){
+            //
+            //   }
+            // }
 
             // g_pageDragGame.m_hwnd.onmousedown = function(st_event){
             //   if (g_pageDragGame.OnMouseDown(st_event) !== 0){

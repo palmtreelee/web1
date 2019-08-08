@@ -13,6 +13,28 @@ CTimerWnd.prototype.m_btnWantNextQuiz = null;
 
 CTimerWnd.prototype.e_btnWantNextQuiz =1;
 
+CTimerWnd.prototype.IsCanNextQuiz = function(){
+  return (this.m_btnWantNextQuiz.IsShow() && this.m_btnWantNextQuiz.IsEnable());
+}
+
+CTimerWnd.prototype.GoNextQuiz = function()
+{
+  this.m_btnWantNextQuiz.SetEnable(false);
+  this.m_isNeedDraw = true;
+  g_Sys.m_arstMsgQ.push(new CMsg(g_Sys.e_msgNextQuiz));
+}
+
+CTimerWnd.prototype.OnMouseDown = function(st_Event)
+{
+  let iRetID = 0;
+  if (true === this.m_btnWantNextQuiz.OnL_Down(st_Event.offsetX,st_Event.offsetY))
+  {
+    iRetID = this.m_btnWantNextQuiz.GetID();
+    this.GoNextQuiz();
+  }
+  g_Sys.m_arstMsgQ.push(new CMsg(g_Sys.e_msgClickTimerWnd_wParamIsBtnID,iRetID));
+}
+
 CTimerWnd.prototype.Init = function(sz_CanvasID,sz_Div){
   this.InitCPage(sz_CanvasID,sz_Div);
 
@@ -35,22 +57,8 @@ CTimerWnd.prototype.Init = function(sz_CanvasID,sz_Div){
   stRgb.m_szBack = stBtn.GetGradient(200,111,43);
   stRgb.m_szFont = '#FFFFFF';
   stBtn.SetRGB(stRgb);
-}
 
-CTimerWnd.prototype.IsCanNextQuiz = function(){
-  return (this.m_btnWantNextQuiz.IsShow() && this.m_btnWantNextQuiz.IsEnable());
-}
-
-CTimerWnd.prototype.GoNextQuiz = function(){
-  this.m_btnWantNextQuiz.SetEnable(false);
-  this.m_isNeedDraw = true;
-  g_Sys.m_arstMsgQ.push(new CMsg(g_Sys.e_msgNextQuiz));
-}
-
-CTimerWnd.prototype.OnMouseDown = function(st_Event){
-  if (true === this.m_btnWantNextQuiz.OnL_Down(st_Event.offsetX,st_Event.offsetY)){
-    this.GoNextQuiz();
-  }
+  $(this.m_hwnd).on('mousedown','',this.OnMouseDown.bind(this));
 }
 
 CTimerWnd.prototype.SetWantNextQuiz = function(){

@@ -476,18 +476,27 @@ CDrageGameWnd.prototype.OnMouseMove = function(st_Event){
 
 CDrageGameWnd.prototype.Init = function(sz_CanvasID,sz_Div){
   this.InitCPage(sz_CanvasID,sz_Div);
+  // if (this.IsTouch()) {
+  //    this.m_hwnd.addEventListener('touchstart', this.OnMouseDown.bind(this), false);
+  //    this.m_hwnd.addEventListener('touchmove', this.OnMouseMove.bind(this), false);
+  //    this.m_hwnd.addEventListener('touchend', this.OnMouseUp.bind(this), false);
+  // } else {
+  //   this.m_hwnd.addEventListener('mousemove',this.OnMouseMove.bind(this),false);
+  //   this.m_hwnd.addEventListener('mouseup',this.OnMouseUp.bind(this),false);
+  //   this.m_hwnd.addEventListener('mouseout',this.OnMouseOut.bind(this),false);
+  //   this.m_hwnd.addEventListener('mousedown',this.OnMouseDown.bind(this),false);
+  // }
+
   if (this.IsTouch()) {
-     this.m_hwnd.addEventListener('touchstart', this.OnMouseDown.bind(this), false);
-     this.m_hwnd.addEventListener('touchmove', this.OnMouseMove.bind(this), false);
-     this.m_hwnd.addEventListener('touchend', this.OnMouseUp.bind(this), false);
+    $(this.m_hwnd).on('touchstart','',this.OnMouseDown.bind(this));
+    $(this.m_hwnd).on('touchmove','',this.OnMouseMove.bind(this));
+    $(this.m_hwnd).on('touchend','',this.OnMouseUp.bind(this));
   } else {
-    this.m_hwnd.addEventListener('mousemove',this.OnMouseMove.bind(this),false);
-    this.m_hwnd.addEventListener('mouseup',this.OnMouseUp.bind(this),false);
-    this.m_hwnd.addEventListener('mouseout',this.OnMouseOut.bind(this),false);
-    this.m_hwnd.addEventListener('mousedown',this.OnMouseDown.bind(this),false);
+    $(this.m_hwnd).on('mousedown','',this.OnMouseDown.bind(this));
+    $(this.m_hwnd).on('mousemove','',this.OnMouseMove.bind(this));
+    $(this.m_hwnd).on('mouseup','',this.OnMouseUp.bind(this));
+    $(this.m_hwnd).on('mouseout','',this.OnMouseOut.bind(this));
   }
-
-
 
   this.m_cxUnit = Math.floor(this.m_cx / 6);
   g_sprRedX.AddFrame(this.m_cxUnit,this.m_cxUnit);
