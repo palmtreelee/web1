@@ -43,6 +43,9 @@ CBtn.prototype.m_sndClick = null;
 CBtn.prototype.m_Show = true;
 CBtn.prototype.m_Enable = true;
 CBtn.prototype.m_ID = 0;
+CBtn.prototype.GetID = function(){
+  return this.m_ID;
+}
 
 // CBtn.prototype.m_Rgb = CColorBtn.prototype;
 // CBtn.prototype.m_RgbBackup = CColorBtn.prototype;
