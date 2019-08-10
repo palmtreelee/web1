@@ -61,6 +61,7 @@ CSprite.prototype.AddFrame = function(cxDest,cyDest,x,y,cx,cy)
   cyDest = typeof cyDest !== 'undefined' ? cyDest : this.m_cySrc;
 
   this.m_arstFrame.push(new CFrame(x,y,cx,cy,cxDest,cyDest));
+  return this.m_arstFrame.length - 1;
 }
 
 CSprite.prototype.ReLoadSize = function(){

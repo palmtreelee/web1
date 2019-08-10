@@ -6,23 +6,45 @@ CColorBtn.prototype.m_szBack='RGB(200,200,200)';
 CColorBtn.prototype.m_szDisable='RGBA(200,200,200,0.5)';
 CColorBtn.prototype.m_szFont='RGB(0,0,0)';
 CColorBtn.prototype.m_szFontDisable='RGB(128,128,128)';
+CColorBtn.prototype.m_sprBack = null;
+CColorBtn.prototype.m_iFrame = 0;
+CColorBtn.prototype.m_sprDisable = null;
+CColorBtn.prototype.m_iFrameDisable = 0;
 
 CColorBtn.prototype.Read = function(st_Rgb){
   this.m_szBack = st_Rgb.m_szBack;
   this.m_szDisable = st_Rgb.m_szDisable;
   this.m_szFont = st_Rgb.m_szFont;
   this.m_szFontDisable = st_Rgb.m_szFontDisable;
+
+  this.m_sprBack = st_Rgb.m_sprBack;
+  this.m_iFrame = st_Rgb.m_iFrame;
+  this.m_sprDisable = st_Rgb.m_sprDisable;
+  this.m_iFrameDisable = st_Rgb.m_iFrameDisable;
 }
 
 CColorBtn.prototype.SetDisableFromNormal = function(){
   this.m_szDisable = this.m_szBack;
   this.m_szFontDisable = this.m_szFont;
+
+  this.m_sprDisable = this.m_sprBack;
+  this.m_iFrameDisable = this.m_iFrame;
 }
 
 CColorBtn.prototype.Clone = function(){
   let rgbRet=new CColorBtn();
   rgbRet.Read(this);
   return rgbRet;
+}
+
+CColorBtn.prototype.SetSprite = function(st_Sprite,i_Frame,is_Disable){
+  if (typeof is_Disable === 'undefined' || false===is_Disable){
+    this.m_sprBack = st_Sprite;
+    this.m_iFrame = i_Frame;
+  }else{
+    this.m_sprDisable = st_Sprite;
+    this.m_iFrameDisable = i_Frame;
+  }
 }
 
 function CBtn() {
@@ -172,8 +194,17 @@ CBtn.prototype.OnL_Down = function(x,y){
 
    if (rc.cx <= rc.cy)
    {
-     this.m_stPage.DrawCircle(rc.x,rc.y,rc.cx,rc.cy,
-       this.m_Enable ? st_RGB.m_szBack : st_RGB.m_szDisable);
+     let spr= this.m_Enable ? st_RGB.m_sprBack : st_RGB.m_sprDisable;
+     if (spr !== null)
+     {
+       let iFrame = this.m_Enable ? st_RGB.m_iFrame : st_RGB.m_iFrameDisable;
+       this.m_stPage.DrawSprite(rc.x,rc.y,spr,iFrame);
+     }
+     else
+     {
+       this.m_stPage.DrawCircle(rc.x,rc.y,rc.cx,rc.cy,
+         this.m_Enable ? st_RGB.m_szBack : st_RGB.m_szDisable);
+     }
    }
    else
    {

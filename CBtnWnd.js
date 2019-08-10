@@ -137,12 +137,11 @@ CBtnWnd.prototype.Draw = function(){
     let posHit = new CPoint();
     for (var key in this.m_arstBtn){
       let stBtn = this.m_arstBtn[key]
-      if (this.m_iResult === stBtn.m_ID){
+      if (this.m_iResult === stBtn.GetID()){
         let stRgb = new CColorBtn();
-        stRgb.m_szBack= (g_Sys.m_Select === stBtn.m_ID) ? '#FF9900' :'#FF0099';
-        stRgb.m_szDisable=stRgb.m_szBack;
         stRgb.m_szFont='#FFFFFF';
-        stRgb.m_szFontDisable=stRgb.m_szFont;
+        stRgb.SetSprite((g_Sys.m_Select === stBtn.m_ID) ? g_sprBtnYellow : g_sprBtnRed , 1,false);
+        stRgb.SetDisableFromNormal();
         stBtn.DrawCustomRGB(stRgb);
       }else{
           stBtn.DrawDef();
@@ -192,7 +191,8 @@ CBtnWnd.prototype.SpeakCheck = function (i_Select){
       this.m_arstBtn[iIndex].BackupRGB();
       var rgb=this.m_arstBtn[iIndex].GetRGB();
       if (i == i_Select){
-          rgb.m_szBack = '#2E64FE';
+          // rgb.m_szBack = '#2E64FE';
+          rgb.SetSprite(g_sprBtnBlue,1,false);
           rgb.m_szFont = '#FFFFFF';
           this.m_arstBtn[iIndex].SetShow(true);
 
@@ -266,6 +266,12 @@ CBtnWnd.prototype.Init = function(sz_CanvasID,sz_Div){
 
   let cx=Math.floor(this.m_cx / e_CntLine);
   this.m_sizScore.Set(cx * e_CntLine,cx);
+  let sizBtn = new CSize(cx-e_Gap * 2,cx - e_Gap * 2);
+
+  g_sprBtnBlack.AddFrame(sizBtn.cx,sizBtn.cy);
+  g_sprBtnBlue.AddFrame(sizBtn.cx,sizBtn.cy);
+  g_sprBtnYellow.AddFrame(sizBtn.cx,sizBtn.cy);
+  g_sprBtnRed.AddFrame(sizBtn.cx,sizBtn.cy);
 
   let x = e_Gap;
   let y = e_Gap;
@@ -274,8 +280,10 @@ CBtnWnd.prototype.Init = function(sz_CanvasID,sz_Div){
   for (i = 1;i < 20;i ++ , j ++){
     this.m_arstBtn.push(new CBtn());
     let stBtn = this.m_arstBtn[i-1];
-    stBtn.InitCBtn(String(i),x,y,cx-e_Gap * 2,cx - e_Gap * 2,this,true,true,i);
-    stBtn.m_Rgb.m_szBack = stBtn.GetGradient(200,200,200);
+    stBtn.InitCBtn(String(i),x,y,sizBtn.cx,sizBtn.cy,this,true,true,i);
+    stBtn.m_Rgb.m_szFont = '#FFFFFF';
+    stBtn.m_Rgb.SetSprite(g_sprBtnBlack,1,false);
+    //stBtn.m_Rgb.m_szBack = stBtn.GetGradient(200,200,200);
     stBtn.BackupRGB();
     stBtn.m_sndClick = g_sndBtnClick;
 

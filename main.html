@@ -88,6 +88,11 @@
       <img id="id_sprRedX" src="Img/RedX.png" alt="" width="100px" height="100px">
       <img id="id_sprJudgment" src="Img/Judgment.png" alt="" width="100px" height="100px">
       <img id="id_sprReset" src="Img/reset.png" alt="" width="100px" height="100px">
+      <img id="id_sprBtnCircleBlack" src="Img/black_circle_btn.png" alt="" width="100px" height="100px">
+      <img id="id_sprBtnCircleBlue" src="Img/blue_circle_btn.png" alt="" width="100px" height="100px">
+      <img id="id_sprBtnCircleYellow" src="Img/yello_circle_btn.png" alt="" width="100px" height="100px">
+      <img id="id_sprBtnCircleRed" src="Img/red_circle_btn.png" alt="" width="100px" height="100px">
+
       <audio preload="auto">
         <source  src="Snd/Fire.MP3" type = "">
       </audio>
@@ -145,6 +150,16 @@
       var g_sprJudgment = g_arSprite[g_arSprite.length -1];
       g_arSprite.push(new CSprite());
       var g_sprReset = g_arSprite[g_arSprite.length -1];
+      g_arSprite.push(new CSprite());
+      var g_sprBtnBlack = g_arSprite[g_arSprite.length -1];
+      g_arSprite.push(new CSprite());
+      var g_sprBtnBlue = g_arSprite[g_arSprite.length -1];
+      g_arSprite.push(new CSprite());
+      var g_sprBtnYellow = g_arSprite[g_arSprite.length -1];
+      g_arSprite.push(new CSprite());
+      var g_sprBtnRed = g_arSprite[g_arSprite.length -1];
+
+
 
       var g_sndFire = new CSound();
       var g_sndDie = new CSound();
@@ -162,15 +177,21 @@
       window.onload = function(){
         console.log('Window Load');
 
-         g_sprRobot.Load('Img/robot.png');
-         g_sprBomb.Load('Img/Bomb1.png');
-         g_sprQuizOk.Load('Img/QuizOk.png');
-          g_sprQuizNo.Load('Img/QuizNo.png');
-          g_sprTimeOver.Load('Img/timeover.png');
-          g_sprClock.Load('Img/Clock.png');
-          g_sprRedX.Load('Img/RedX.png');
-          g_sprJudgment.Load('Img/Judgment.png');
-          g_sprReset.Load('Img/reset.png');
+       g_sprRobot.Load('Img/robot.png');
+       g_sprBomb.Load('Img/Bomb1.png');
+       g_sprQuizOk.Load('Img/QuizOk.png');
+        g_sprQuizNo.Load('Img/QuizNo.png');
+        g_sprTimeOver.Load('Img/timeover.png');
+        g_sprClock.Load('Img/Clock.png');
+        g_sprRedX.Load('Img/RedX.png');
+        g_sprJudgment.Load('Img/Judgment.png');
+        g_sprReset.Load('Img/reset.png');
+        g_sprBtnBlack.Load('Img/black_circle_btn.png');
+        g_sprBtnBlue.Load('Img/blue_circle_btn.png');
+        g_sprBtnYellow.Load('Img/yello_circle_btn.png');
+        g_sprBtnRed.Load('Img/red_circle_btn.png');
+
+
          // g_sprRobot.LoadFromID('id_sprRobot');
          // g_sprBomb.LoadFromID('id_sprBomb');
         g_sndFire.Load("Snd/Fire.MP3");
